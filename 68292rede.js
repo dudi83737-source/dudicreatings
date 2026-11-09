@@ -242,3 +242,9 @@ class PetSnapApp {
 document.addEventListener('DOMContentLoaded', () => {
     new PetSnapApp();
 });
+const firebaseConfig = {
+    apiKey: "AIzaSyA1...",
+    databaseURL: "https://firebaseio.com",
+    projectId: "petfriends-app",
+    appId: "1:123456..."
+};
