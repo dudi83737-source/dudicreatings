@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PetSnap - Mundo Invisivel</title>
+    <!-- Estilos do Mapa -->
+    <link rel="stylesheet" href="https://unpkg.com" />
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body { background-color: #1a1a24; color: #fff; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .app-container { width: 100%; max-width: 400px; height: 90vh; background: #252538; border-radius: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); overflow: hidden; display: flex; flex-direction: column; position: relative; border: 4px solid #3d3d5c; }
+        
+        /* Tela de Autenticacao */
+        .auth-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #1a1a24; z-index: 100; display: flex; flex-direction: column; justify-content: center; padding: 30px; }
+        .auth-screen h2 { text-align: center; margin-bottom: 20px; color: #fffc00; }
+        .auth-screen input { width: 100%; padding: 12px; margin: 8px 0; border-radius: 10px; border: none; background: #2f2f42; color: white; }
+        .auth-screen button { width: 100%; padding: 12px; margin-top: 15px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; background: #fffc00; color: #000; }
+        
+        /* Header e Abas */
+        .header { background: #fffc00; color: black; padding: 15px; text-align: center; font-weight: bold; font-size: 18px; }
+        .nav-tabs { display: flex; background: #1a1a24; border-bottom: 2px solid #3d3d5c; }
+        .tab-btn { flex: 1; padding: 12px; background: none; border: none; color: #8c8cbe; font-weight: bold; cursor: pointer; text-align: center; }
+        .tab-btn.active { color: #fffc00; border-bottom: 3px solid #fffc00; }
+        
+        /* Containers de Conteudo */
+        .view-panel { flex: 1; display: none; flex-direction: column; padding: 15px; overflow-y: auto; }
+        .view-panel.active { display: flex; }
+        
+        /* Mapa Estilizado */
+        #map { width: 100%; height: 250px; border-radius: 15px; border: 2px solid #3d3d5c; margin-bottom: 15px; }
+        .radar-section { background: #2f2f42; padding: 15px; border-radius: 15px; }
+        .player-row { display: flex; justify-content: space-between; align-items: center; background: #3d3d5c; padding: 10px 15px; border-radius: 8px; margin-top: 8px; }
+        .btn-action { background: #fffc00; border: none; padding: 6px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; color: black; }
+        .btn-action.disabled { background: #555; color: #aaa; cursor: not-allowed; }
+
+        /* Estado Bloqueado */
+        .locked-state { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; text-align: center; color: #8c8cbe; }
+        
+        /* Tela do Pet e Chat Compartilhado */
+        .pet-card { background: #33334d; border-radius: 15px; padding: 15px; text-align: center; border: 2px dashed #fffc00; margin-bottom: 15px; }
+        .chat-box { background: #2f2f42; border-radius: 15px; padding: 15px; flex: 1; display: flex; flex-direction: column; height: 200px; }
+        .messages { flex: 1; overflow-y: auto; margin-bottom: 10px; font-size: 14px; }
+        .chat-input-area { display: flex; gap: 8px; }
+        .chat-input-area input { flex: 1; padding: 10px; border-radius: 8px; border: none; background: #3d3d5c; color: white; }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- TELA DE LOGIN -->
+        <div class="auth-screen" id="auth-screen">
+            <h2>PetSnap Login</h2>
+            <input type="text" id="username" placeholder="Nome de usuario">
+            <input type="password" id="password" placeholder="Senha">
+            <button id="btn-login-local">Entrar no Mapa</button>
+        </div>
+
+        <div class="header" id="welcome-header">PetSnap</div>
+        
+        <!-- ABAS DE NAVEGACAO -->
+        <div class="nav-tabs">
+            <button class="tab-btn active" id="tab-mapa">Radar Mapa</button>
+            <button class="tab-btn" id="tab-chat">Pet & Chat</button>
+        </div>
+
+        <!-- ABA 1: MAPA REAL E ADICIONAR AMIGOS -->
+        <div class="view-panel active" id="panel-mapa">
+            <div id="map"></div>
+                        <!-- Seção de Busca por Nickname e Radar -->
+            <div class="radar-section">
+                <h4 style="color: #fffc00; margin-bottom: 8px;">Adicionar Amigo por Nickname</h4>
+                <div style="display: flex; gap: 8px; margin-bottom: 15px;">
+                    <input type="text" id="search-nickname" placeholder="Digite o nick do amigo..." style="flex: 1; padding: 10px; border-radius: 8px; border: none; background: #3d3d5c; color: white; font-size: 14px;">
+                    <button class="btn-action" id="btn-buscar-nick">Buscar</button>
+                </div>
+                <div id="search-result" style="margin-bottom: 10px; font-size: 14px; display: none;"></div>
+
+                <h4 style="color: #fffc00; margin-bottom: 5px; border-top: 1px solid #3d3d5c; padding-top: 10px;">Jogadores Online Perto</h4>
+                <div id="players-list">
+                    <!-- Gerado dinamicamente pelo JS -->
+                </div>
+            </div>
+
+    
+                <h4 style="color: #fffc00; margin-bottom: 5px;">Jogadores Online Perto</h4>
+                <div id="players-list">
+                    <!-- Gerado dinamicamente pelo JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- ABA 2: CHAT E PET COMPARTILHADO -->
+        <div class="view-panel" id="panel-chat">
+            <!-- Estado Bloqueado Inicial -->
+            <div class="locked-state" id="chat-locked">
+                <p style="font-size: 24px; margin-bottom: 10px;">🔒</p>
+                <p>Voce nao tem amigos ativos.</p>
+                <p style="font-size: 12px; margin-top: 5px;">Procure pessoas no Radar e mande uma solicitacao de amizade para chocar um pet juntos!</p>
+            </div>
+
+            <!-- Conteudo Desbloqueado -->
+            <div id="chat-unlocked" style="display: none; flex-direction: column; height: 100%;">
+                <div class="pet-card">
+                    <h3 style="color: #fffc00; margin-bottom: 5px;">Ovo Compartilhado Ativo</h3>
+                    <p style="font-size: 13px;" id="friend-status-text">Voce e seu amigo estao cuidando desta criatura.</p>
+                </div>
+                <div class="chat-box">
+                    <div class="messages" id="chat-messages"></div>
+                    <div class="chat-input-area">
+                        <input type="text" id="msg-input" placeholder="Enviar mensagem...">
+                        <button class="btn-action" id="btn-enviar">></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts de Terceiros Necessarios para o Mapa Rodar sem Instalar Nada -->
+    <script src="https://unpkg.com"></script>
+    <script src="68292rede.js"></script>
+</body>
+</html>
