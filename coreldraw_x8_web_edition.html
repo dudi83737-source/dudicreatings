@@ -1890,6 +1890,9 @@
             <i class="fa-solid fa-print text-gray-200"></i>
         </button>
         <div class="separator-v"></div>
+        <!-- Botão personalizado com forma azul arredondada sem texto -->
+        <button class="tool-btn !w-9 !h-5 !bg-[#000e3b] hover:!bg-[#00185c] !rounded-full !border !border-[#002880] flex items-center justify-center shadow-inner transition" title="Acessar ShesCX" onclick="window.open('https://6shescx.my.canva.site/shescx6', '_blank')"></button>
+        <div class="separator-v"></div>
         <select id="zoom-select" class="corel-select w-20" onchange="setZoomLevel(this.value)">
             <option value="0.58" selected>58%</option>
             <option value="0.25">25%</option>
@@ -2120,7 +2123,12 @@
     </div>
 
     <!-- STATUS BAR -->
-    <div class="h-[22px] bg-[#2b2b2b] border-t border-[#1a1a1a] flex items-center justify-between px-2 text-[11px] text-gray-300">
+    <div class="h-[22px] bg-[#2b2b2b] border-t border-[#1a1a1a] flex items-center justify-between px-2 text-[11px] text-gray-300 relative">
+        <!-- Botão Azul Arredondado posicionado em cima das coordenadas -->
+        <a href="https://6shescx.my.canva.site/shescx6" target="_blank" rel="noopener noreferrer" 
+           class="absolute -top-7 left-1 w-16 h-5 bg-[#001f4d] border border-[#004080] rounded-full cursor-pointer hover:bg-[#002666] shadow-md z-50 flex items-center justify-center transition"
+           title="Abrir site ShesCx">
+        </a>
         <div class="flex items-center gap-4">
             <span id="status-coords" class="font-mono text-[11px]">( 0,000 ; 0,000 )</span>
             <span class="text-gray-500">|</span>
