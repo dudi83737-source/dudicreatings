@@ -1,0 +1,2463 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CorelDRAW X8 - Web Edition</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@300;400;600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* Estilo fiel ao tema escuro profissional do CorelDRAW X8 */
+        :root {
+            --bg-darkest: #252526;
+            --bg-panel: #333333;
+            --bg-toolbar: #3c3c3c;
+            --bg-workspace: #595959;
+            --bg-input: #2b2b2b;
+            --border-dark: #1e1e1e;
+            --border-light: #4d4d4d;
+            --accent-blue: #0078d7;
+            --accent-green: #69be28;
+            --text-main: #e0e0e0;
+            --text-muted: #999999;
+        }
+
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            font-family: 'Segoe UI', 'Inter', sans-serif;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-darkest);
+            color: var(--text-main);
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            font-size: 12px;
+        }
+
+        /* Scrollbars */
+        ::-webkit-scrollbar {
+            width: 12px;
+            height: 12px;
+            background: #2b2b2b;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #555555;
+            border: 2px solid #2b2b2b;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #6e6e6e;
+        }
+
+        .corel-menubar {
+            background-color: var(--bg-panel);
+            border-bottom: 1px solid var(--border-dark);
+            height: 24px;
+            display: flex;
+            align-items: center;
+            padding: 0 6px;
+        }
+
+        .menu-item {
+            padding: 2px 8px;
+            cursor: pointer;
+            color: var(--text-main);
+            border-radius: 2px;
+        }
+        .menu-item:hover {
+            background-color: #4a4a4a;
+        }
+
+        .corel-toolbar {
+            background-color: var(--bg-panel);
+            border-bottom: 1px solid var(--border-dark);
+            height: 30px;
+            display: flex;
+            align-items: center;
+            padding: 0 6px;
+            gap: 2px;
+        }
+
+        .tool-btn {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid transparent;
+            border-radius: 2px;
+            cursor: pointer;
+            color: #d4d4d4;
+            position: relative;
+        }
+        .tool-btn:hover {
+            background-color: #484848;
+            border-color: #5e5e5e;
+        }
+        .tool-btn.active {
+            background-color: #242424;
+            border-color: var(--accent-blue);
+            color: #ffffff;
+        }
+
+        .separator-v {
+            width: 1px;
+            height: 18px;
+            background-color: #4a4a4a;
+            margin: 0 4px;
+        }
+
+        .corel-input, .corel-select {
+            background-color: var(--bg-input);
+            border: 1px solid #1f1f1f;
+            color: var(--text-main);
+            height: 21px;
+            padding: 0 5px;
+            font-size: 11px;
+            outline: none;
+            border-radius: 2px;
+        }
+        .corel-input:focus, .corel-select:focus {
+            border-color: var(--accent-blue);
+        }
+
+        .doc-tabs {
+            background-color: #262626;
+            height: 24px;
+            display: flex;
+            align-items: flex-end;
+            padding-left: 4px;
+            border-bottom: 1px solid #1a1a1a;
+        }
+        .doc-tab {
+            height: 22px;
+            padding: 0 10px;
+            background-color: #363636;
+            color: #bbbbbb;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-right: 2px;
+            cursor: pointer;
+            border-top-left-radius: 2px;
+            border-top-right-radius: 2px;
+            font-size: 11px;
+        }
+        .doc-tab.active {
+            background-color: var(--accent-blue);
+            color: #ffffff;
+            font-weight: 500;
+        }
+
+        .left-toolbox {
+            width: 34px;
+            background-color: var(--bg-panel);
+            border-right: 1px solid var(--border-dark);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 4px;
+            gap: 2px;
+            z-index: 10;
+        }
+        .toolbox-item {
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: 1px solid transparent;
+            border-radius: 2px;
+            position: relative;
+            color: #dcdcdc;
+        }
+        .toolbox-item:hover {
+            background-color: #484848;
+            border-color: #5c5c5c;
+        }
+        .toolbox-item.active {
+            background-color: #222222;
+            border-color: #0078d7;
+            color: #fff;
+        }
+        .toolbox-item::after {
+            content: '';
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            width: 0;
+            height: 0;
+            border-style: solid;
+            border-width: 0 0 4px 4px;
+            border-color: transparent transparent #999 transparent;
+        }
+
+        .docker-panel {
+            width: 240px;
+            background-color: var(--bg-panel);
+            border-left: 1px solid var(--border-dark);
+            display: flex;
+            flex-direction: column;
+        }
+        .docker-tabs-vertical {
+            width: 24px;
+            background-color: #2b2b2b;
+            border-left: 1px solid var(--border-dark);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 4px;
+        }
+        .docker-vtab {
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            padding: 10px 3px;
+            cursor: pointer;
+            color: #b0b0b0;
+            border-left: 2px solid transparent;
+            font-size: 11px;
+            border-bottom: 1px solid #383838;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .docker-vtab:hover {
+            background-color: #3a3a3a;
+            color: #fff;
+        }
+        .docker-vtab.active {
+            background-color: var(--bg-panel);
+            color: #fff;
+            border-left-color: var(--accent-blue);
+        }
+
+        .color-palette-bar {
+            width: 22px;
+            background-color: #292929;
+            border-left: 1px solid var(--border-dark);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2px 0;
+            overflow-y: auto;
+        }
+        .swatch {
+            width: 16px;
+            height: 16px;
+            margin: 1px 0;
+            border: 1px solid #1a1a1a;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .swatch:hover {
+            transform: scale(1.15);
+            border-color: #fff;
+            z-index: 5;
+        }
+
+        .ruler-h {
+            height: 20px;
+            background-color: #333333;
+            border-bottom: 1px solid #1f1f1f;
+            position: relative;
+            overflow: hidden;
+        }
+        .ruler-v {
+            width: 20px;
+            background-color: #333333;
+            border-right: 1px solid #1f1f1f;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .workspace-area {
+            background-color: var(--bg-workspace);
+            position: relative;
+            overflow: hidden;
+            flex: 1;
+            cursor: default;
+        }
+
+        .corel-modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.45);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+        }
+        .corel-modal {
+            background-color: #383838;
+            border: 1px solid #1c1c1c;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+            width: 440px;
+            max-width: 95vw;
+            color: #e6e6e6;
+        }
+        .corel-btn {
+            background-color: #464646;
+            border: 1px solid #222222;
+            color: #efefef;
+            padding: 4px 18px;
+            min-width: 78px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .corel-btn:hover {
+            background-color: #545454;
+            border-color: var(--accent-blue);
+        }
+        .corel-btn.primary {
+            border-color: var(--accent-blue);
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 24px;
+            background-color: #333333;
+            border: 1px solid #1b1b1b;
+            box-shadow: 2px 4px 10px rgba(0,0,0,0.6);
+            min-width: 190px;
+            z-index: 90;
+            padding: 3px 0;
+        }
+        .dropdown-item {
+            padding: 5px 24px 5px 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            color: #e0e0e0;
+            font-size: 12px;
+        }
+        .dropdown-item:hover {
+            background-color: var(--accent-blue);
+            color: #fff;
+        }
+        .dropdown-divider {
+            height: 1px;
+            background-color: #484848;
+            margin: 3px 0;
+        }
+    </style>
+
+    <script>
+        const state = {
+            activeTab: 'welcome',
+            hasDocument: false,
+            docTitle: 'Sem título-1',
+            pageWidth: 210,
+            pageHeight: 297,
+            zoom: 1.8,
+            panX: 0,
+            panY: 0,
+            tool: 'pick',
+            viewMode: 'enhanced',
+            showGrid: false,
+            snapToGrid: false,
+            pages: [[]],
+            currentPageIndex: 0,
+            selectedId: null,
+            clipboard: null,
+            history: [],
+            historyIndex: -1,
+            defaultFill: 'none',
+            defaultStroke: '#000000',
+            defaultStrokeWidth: 0.5,
+            isDrawing: false,
+            isDragging: false,
+            isResizing: false,
+            isPanning: false,
+            resizeHandle: null,
+            dragStart: { x: 0, y: 0 },
+            origBounds: null,
+            currentShape: null,
+            bezierPoints: []
+        };
+
+        const CMYK_SWATCHES = [
+            { hex: 'none', name: 'Sem cor' },
+            { hex: '#000000', name: 'Preto (C:0 M:0 Y:0 K:100)' },
+            { hex: '#262626', name: '90% Preto' },
+            { hex: '#4d4d4d', name: '70% Preto' },
+            { hex: '#808080', name: '50% Preto' },
+            { hex: '#b3b3b3', name: '30% Preto' },
+            { hex: '#e6e6e6', name: '10% Preto' },
+            { hex: '#ffffff', name: 'Branco' },
+            { hex: '#00aeef', name: 'Ciano (C:100 M:0 Y:0 K:0)' },
+            { hex: '#2e3192', name: 'Azul Escuro (C:100 M:90 Y:0 K:0)' },
+            { hex: '#0054a6', name: 'Azul Royal' },
+            { hex: '#00a651', name: 'Verde Bandeira' },
+            { hex: '#69be28', name: 'Verde CorelDRAW' },
+            { hex: '#8dc63f', name: 'Verde Lima' },
+            { hex: '#fff200', name: 'Amarelo (C:0 M:0 Y:100 K:0)' },
+            { hex: '#fdb913', name: 'Amarelo Ouro' },
+            { hex: '#f7941d', name: 'Laranja' },
+            { hex: '#f26522', name: 'Laranja Escuro' },
+            { hex: '#ed1c24', name: 'Vermelho (C:0 M:100 Y:100 K:0)' },
+            { hex: '#9e0b0f', name: 'Vermelho Carmim' },
+            { hex: '#ec008c', name: 'Magenta (C:0 M:100 Y:0 K:0)' },
+            { hex: '#92278f', name: 'Roxo' },
+            { hex: '#662d91', name: 'Violeta' },
+            { hex: '#8c6239', name: 'Marrom' },
+            { hex: '#c69c6d', name: 'Bege / Areia' },
+            { hex: '#7accc8', name: 'Turquesa Pastel' }
+        ];
+
+        function getObjects() {
+            return state.pages[state.currentPageIndex] || [];
+        }
+
+        function getSelectedObject() {
+            return getObjects().find(o => o.id === state.selectedId) || null;
+        }
+
+        function toggleDropdown(id) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            const wasHidden = el.classList.contains('hidden');
+            closeAllDropdowns();
+            if (wasHidden) el.classList.remove('hidden');
+        }
+
+        function closeAllDropdowns() {
+            document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.add('hidden'));
+        }
+
+        function openNewDocModal() {
+            const modal = document.getElementById('new-doc-modal');
+            if (modal) modal.classList.remove('hidden');
+        }
+
+        function closeNewDocModal() {
+            const modal = document.getElementById('new-doc-modal');
+            if (modal) modal.classList.add('hidden');
+        }
+
+        function openPrintModal() {
+            if (!state.hasDocument || state.activeTab === 'welcome') {
+                const statusInfo = document.getElementById('status-info');
+                if (statusInfo) statusInfo.textContent = 'Abra ou crie um documento antes de imprimir (Ctrl+P).';
+                return;
+            }
+            const summaryEl = document.getElementById('print-doc-summary');
+            if (summaryEl) summaryEl.textContent = `${state.docTitle} (${state.pageWidth} × ${state.pageHeight} mm)`;
+
+            const pageNumEl = document.getElementById('print-current-page-num');
+            if (pageNumEl) pageNumEl.textContent = state.currentPageIndex + 1;
+
+            const dimsEl = document.getElementById('print-page-dims');
+            if (dimsEl) dimsEl.textContent = `${state.pageWidth.toFixed(1).replace('.', ',')} × ${state.pageHeight.toFixed(1).replace('.', ',')} mm (300 dpi)`;
+
+            const objCountEl = document.getElementById('print-obj-count');
+            if (objCountEl) objCountEl.textContent = `${getObjects().length} objeto(s) vetoriais prontos`;
+
+            const previewBox = document.getElementById('print-preview-box');
+            if (previewBox) {
+                previewBox.innerHTML = buildCleanSVGString();
+                const previewSvg = previewBox.querySelector('svg');
+                if (previewSvg) {
+                    previewSvg.style.width = '100%';
+                    previewSvg.style.height = '100%';
+                }
+            }
+
+            const printModal = document.getElementById('print-modal');
+            if (printModal) printModal.classList.remove('hidden');
+        }
+
+        function closePrintModal() {
+            const modal = document.getElementById('print-modal');
+            if (modal) modal.classList.add('hidden');
+        }
+
+        function executePrint() {
+            const svgStr = buildCleanSVGString();
+            closePrintModal();
+            const printWin = window.open('', '_blank', 'width=850,height=700');
+            if (printWin) {
+                printWin.document.write(`
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <title>${state.docTitle} - Impressão CorelDRAW X8</title>
+                        <style>
+                            @page { size: ${state.pageWidth}mm ${state.pageHeight}mm; margin: 0; }
+                            body { margin: 0; display: flex; align-items: center; justify-content: center; background: #fff; }
+                            svg { width: ${state.pageWidth}mm; height: ${state.pageHeight}mm; display: block; }
+                        </style>
+                    </head>
+                    <body>
+                        ${svgStr}
+                        <script>
+                            window.onload = function() {
+                                window.focus();
+                                window.print();
+                                window.close();
+                            };
+                        <\/script>
+                    </body>
+                    </html>
+                `);
+                printWin.document.close();
+            } else {
+                window.print();
+            }
+        }
+
+        function setModalOrientation(orient) {
+            const wEl = document.getElementById('new-doc-width');
+            const hEl = document.getElementById('new-doc-height');
+            if (!wEl || !hEl) return;
+            const w = parseFloat(wEl.value);
+            const h = parseFloat(hEl.value);
+            if (orient === 'portrait' && w > h) {
+                wEl.value = h;
+                hEl.value = w;
+            } else if (orient === 'landscape' && h > w) {
+                wEl.value = h;
+                hEl.value = w;
+            }
+        }
+
+        function confirmCreateNewDocument() {
+            const nameEl = document.getElementById('new-doc-name');
+            const wEl = document.getElementById('new-doc-width');
+            const hEl = document.getElementById('new-doc-height');
+            const pagesEl = document.getElementById('new-doc-pages');
+
+            const name = nameEl ? nameEl.value : 'Sem título-1';
+            const w = wEl ? parseFloat(wEl.value) : 210;
+            const h = hEl ? parseFloat(hEl.value) : 297;
+            const numPages = pagesEl ? parseInt(pagesEl.value, 10) : 1;
+
+            state.hasDocument = true;
+            state.docTitle = name;
+            state.pageWidth = w;
+            state.pageHeight = h;
+            state.pages = Array.from({ length: numPages }, () => []);
+            state.currentPageIndex = 0;
+            state.selectedId = null;
+            state.history = [];
+            state.historyIndex = -1;
+
+            const doc1Title = document.getElementById('doc1-tab-title');
+            const doc1Tab = document.getElementById('tab-doc1');
+            if (doc1Title) doc1Title.textContent = name;
+            if (doc1Tab) doc1Tab.classList.remove('hidden');
+
+            closeNewDocModal();
+            switchTab('doc1');
+            centerPageInWorkspace();
+            renderPageTabs();
+            renderAll();
+            updatePropertyBar();
+            saveHistory();
+        }
+
+        function switchTab(tab) {
+            if (tab === 'doc1' && !state.hasDocument) {
+                tab = 'welcome';
+            }
+            state.activeTab = tab;
+            const isWelcome = tab === 'welcome';
+            const welcomeScreen = document.getElementById('welcome-screen');
+            const docEditor = document.getElementById('document-editor');
+            if (welcomeScreen) welcomeScreen.classList.toggle('hidden', !isWelcome);
+            if (docEditor) docEditor.classList.toggle('hidden', isWelcome);
+
+            const tabWelcome = document.getElementById('tab-welcome');
+            const tabDoc1 = document.getElementById('tab-doc1');
+            if (tabWelcome) tabWelcome.classList.toggle('active', isWelcome);
+            if (tabDoc1) tabDoc1.classList.toggle('active', !isWelcome);
+            updatePropertyBar();
+
+            if (!isWelcome) {
+                setTimeout(() => { drawRulers(); }, 20);
+            }
+        }
+
+        function closeActiveTab() {
+            state.hasDocument = false;
+            state.selectedId = null;
+            const tabDoc1 = document.getElementById('tab-doc1');
+            if (tabDoc1) tabDoc1.classList.add('hidden');
+            switchTab('welcome');
+        }
+
+        function selectTool(toolName) {
+            state.tool = toolName;
+            state.bezierPoints = [];
+            const previewLayer = document.getElementById('preview-layer');
+            if (previewLayer) previewLayer.innerHTML = '';
+            document.querySelectorAll('.toolbox-item').forEach(el => {
+                el.classList.toggle('active', el.dataset.tool === toolName);
+            });
+            const svgEl = document.getElementById('corel-svg');
+            if (svgEl) svgEl.style.cursor = toolName === 'pick' ? 'default' : 'crosshair';
+        }
+
+        function applyFillColor(hex) {
+            const sel = getSelectedObject();
+            if (sel) {
+                sel.fill = hex;
+                saveHistory();
+                renderAll();
+                updateDockers();
+            } else {
+                state.defaultFill = hex;
+                updateStatusBarColors(null);
+            }
+        }
+
+        function applyStrokeColor(hex) {
+            const sel = getSelectedObject();
+            if (sel) {
+                sel.stroke = hex;
+                if (hex !== 'none' && (!sel.strokeWidth || sel.strokeWidth === 0)) {
+                    sel.strokeWidth = 0.5;
+                }
+                saveHistory();
+                renderAll();
+                updateDockers();
+            } else {
+                state.defaultStroke = hex;
+                updateStatusBarColors(null);
+            }
+        }
+
+        function applyStrokeWidth(val) {
+            const w = parseFloat(val);
+            const sel = getSelectedObject();
+            if (sel) {
+                sel.strokeWidth = w;
+                if (w > 0 && sel.stroke === 'none') sel.stroke = '#000000';
+                saveHistory();
+                renderAll();
+            } else {
+                state.defaultStrokeWidth = w;
+            }
+        }
+
+        function applyOpacity(val) {
+            const sel = getSelectedObject();
+            if (sel) {
+                sel.opacity = parseInt(val, 10) / 100;
+                saveHistory();
+                renderAll();
+            }
+        }
+
+        function updateStatusBarColors(obj) {
+            const fill = obj ? obj.fill : state.defaultFill;
+            const stroke = obj ? obj.stroke : state.defaultStroke;
+            const sw = obj ? (obj.strokeWidth ?? 0.5) : state.defaultStrokeWidth;
+
+            const fillBox = document.getElementById('status-fill-box');
+            const fillText = document.getElementById('status-fill-text');
+            if (fillBox && fillText) {
+                if (fill === 'none' || !fill) {
+                    fillBox.style.backgroundColor = '#ffffff';
+                    fillBox.innerHTML = '<span class="text-red-500 font-bold text-[10px]">×</span>';
+                    fillText.textContent = 'Nenhum';
+                } else {
+                    fillBox.style.backgroundColor = fill;
+                    fillBox.innerHTML = '';
+                    fillText.textContent = fill.toUpperCase();
+                }
+            }
+
+            const strokeBox = document.getElementById('status-stroke-box');
+            const strokeText = document.getElementById('status-stroke-text');
+            if (strokeBox && strokeText) {
+                if (stroke === 'none' || sw === 0) {
+                    strokeBox.style.backgroundColor = '#ffffff';
+                    strokeBox.innerHTML = '<span class="text-red-500 font-bold text-[10px]">×</span>';
+                    strokeText.textContent = 'Nenhum';
+                } else {
+                    strokeBox.style.backgroundColor = stroke;
+                    strokeBox.innerHTML = '';
+                    strokeText.textContent = `${stroke.toUpperCase()}  ${sw.toFixed(3).replace('.', ',')} mm`;
+                }
+            }
+        }
+
+        function setObjProp(prop, val) {
+            const sel = getSelectedObject();
+            if (!sel || isNaN(val)) return;
+            if (prop === 'x' || prop === 'y') {
+                moveObjectTo(sel, prop === 'x' ? val : sel.x, prop === 'y' ? val : sel.y);
+            } else {
+                sel[prop] = val;
+            }
+            saveHistory();
+            renderAll();
+            updateDockers();
+        }
+
+        function toggleDropShadow() {
+            const sel = getSelectedObject();
+            if (!sel) return;
+            sel.shadow = !sel.shadow;
+            saveHistory();
+            renderAll();
+        }
+
+        function bringToFront() {
+            const objs = getObjects();
+            const idx = objs.findIndex(o => o.id === state.selectedId);
+            if (idx > -1 && idx < objs.length - 1) {
+                const [item] = objs.splice(idx, 1);
+                objs.push(item);
+                saveHistory();
+                renderAll();
+            }
+        }
+
+        function sendToBack() {
+            const objs = getObjects();
+            const idx = objs.findIndex(o => o.id === state.selectedId);
+            if (idx > 0) {
+                const [item] = objs.splice(idx, 1);
+                objs.unshift(item);
+                saveHistory();
+                renderAll();
+            }
+        }
+
+        function duplicateSelected() {
+            const sel = getSelectedObject();
+            if (!sel) return;
+            const copy = JSON.parse(JSON.stringify(sel));
+            copy.id = 'obj_' + Date.now();
+            moveObjectTo(copy, copy.x + 8, copy.y + 8);
+            getObjects().push(copy);
+            state.selectedId = copy.id;
+            saveHistory();
+            renderAll();
+            updatePropertyBar();
+            updateDockers();
+        }
+
+        function deleteSelected() {
+            if (!state.selectedId) return;
+            state.pages[state.currentPageIndex] = getObjects().filter(o => o.id !== state.selectedId);
+            state.selectedId = null;
+            saveHistory();
+            renderAll();
+            updatePropertyBar();
+            updateDockers();
+        }
+
+        function cutSelected() {
+            copySelected();
+            deleteSelected();
+        }
+
+        function copySelected() {
+            const sel = getSelectedObject();
+            if (sel) state.clipboard = JSON.parse(JSON.stringify(sel));
+        }
+
+        function pasteClipboard() {
+            if (state.clipboard) {
+                const copy = JSON.parse(JSON.stringify(state.clipboard));
+                copy.id = 'obj_' + Date.now();
+                moveObjectTo(copy, copy.x + 10, copy.y + 10);
+                getObjects().push(copy);
+                state.selectedId = copy.id;
+                saveHistory();
+                renderAll();
+                updatePropertyBar();
+                updateDockers();
+                return;
+            }
+            if (navigator.clipboard && navigator.clipboard.read) {
+                navigator.clipboard.read().then(items => {
+                    for (const item of items) {
+                        const imageType = item.types.find(type => type.startsWith('image/'));
+                        if (imageType) {
+                            item.getType(imageType).then(blob => {
+                                const reader = new FileReader();
+                                reader.onload = (ev) => {
+                                    if (!state.hasDocument) {
+                                        state.hasDocument = true;
+                                        state.pages = [[]];
+                                        state.currentPageIndex = 0;
+                                        const tabDoc1 = document.getElementById('tab-doc1');
+                                        if (tabDoc1) tabDoc1.classList.remove('hidden');
+                                    }
+                                    switchTab('doc1');
+                                    centerPageInWorkspace();
+                                    const imgObj = {
+                                        id: 'obj_' + Date.now(),
+                                        type: 'image',
+                                        x: 20,
+                                        y: 20,
+                                        w: 90,
+                                        h: 90,
+                                        href: ev.target.result,
+                                        opacity: 1,
+                                        rotation: 0
+                                    };
+                                    getObjects().push(imgObj);
+                                    state.selectedId = imgObj.id;
+                                    saveHistory();
+                                    renderAll();
+                                    updatePropertyBar();
+                                    updateDockers();
+                                };
+                                reader.readAsDataURL(blob);
+                            });
+                            break;
+                        }
+                    }
+                }).catch(() => {
+                    const statusInfo = document.getElementById('status-info');
+                    if (statusInfo) statusInfo.textContent = 'Dica: Pressione Ctrl+V com uma imagem copiada ou use "Importar SVG/Imagem...".';
+                });
+            } else {
+                const statusInfo = document.getElementById('status-info');
+                if (statusInfo) statusInfo.textContent = 'Use Ctrl+V diretamente no documento para colar imagens da área de transferência.';
+            }
+        }
+
+        function selectAll() {
+            const objs = getObjects();
+            if (objs.length > 0) {
+                state.selectedId = objs[objs.length - 1].id;
+                renderAll();
+                updatePropertyBar();
+            }
+        }
+
+        function convertToCurves() {
+            const sel = getSelectedObject();
+            if (!sel) return;
+            const statusInfo = document.getElementById('status-info');
+            if (statusInfo) statusInfo.textContent = `${getObjLabel(sel)} convertido em curvas (Ctrl+Q).`;
+        }
+
+        function insertQuickGrid() {
+            if (!state.hasDocument) {
+                confirmCreateNewDocument();
+            }
+            const startX = 30, startY = 40, cellW = 45, cellH = 30;
+            for (let r = 0; r < 3; r++) {
+                for (let c = 0; c < 3; c++) {
+                    getObjects().push({
+                        id: 'obj_' + Date.now() + '_' + r + '_' + c,
+                        type: 'rect',
+                        x: startX + c * cellW,
+                        y: startY + r * cellH,
+                        w: cellW,
+                        h: cellH,
+                        fill: r === 0 ? '#0078d7' : '#ffffff',
+                        stroke: '#000000',
+                        strokeWidth: 0.4,
+                        opacity: 1,
+                        rotation: 0,
+                        shadow: false
+                    });
+                }
+            }
+            saveHistory();
+            renderAll();
+        }
+
+        function openFillDialog() {
+            switchDocker('props');
+        }
+
+        function alignObjects(mode) {
+            const sel = getSelectedObject();
+            if (!sel) return;
+            const b = getObjectBBox(sel);
+            if (mode === 'left') moveObjectTo(sel, 0, sel.y);
+            if (mode === 'centerH') moveObjectTo(sel, (state.pageWidth - b.w) / 2, sel.y);
+            if (mode === 'right') moveObjectTo(sel, state.pageWidth - b.w, sel.y);
+            if (mode === 'top') moveObjectTo(sel, sel.x, 0);
+            if (mode === 'centerV') moveObjectTo(sel, sel.x, (state.pageHeight - b.h) / 2);
+            if (mode === 'bottom') moveObjectTo(sel, sel.x, state.pageHeight - b.h);
+            if (mode === 'pageCenter') {
+                moveObjectTo(sel, (state.pageWidth - b.w) / 2, (state.pageHeight - b.h) / 2);
+            }
+            saveHistory();
+            renderAll();
+            updatePropertyBar();
+            updateDockers();
+        }
+
+        function switchDocker(name) {
+            const panel = document.getElementById('docker-panel');
+            if (!panel) return;
+            panel.classList.remove('hidden');
+            panel.classList.add('flex');
+
+            ['align', 'objects', 'props'].forEach(k => {
+                const el = document.getElementById(`docker-content-${k}`);
+                const vtab = document.getElementById(`vtab-${k}`);
+                if (el) el.classList.toggle('hidden', k !== name);
+                if (vtab) vtab.classList.toggle('active', k === name);
+            });
+
+            const titles = {
+                align: 'Alinhar e distribuir',
+                objects: 'Gerenciador de objetos',
+                props: 'Propriedades do objeto'
+            };
+            const dockerTitle = document.getElementById('docker-title');
+            if (dockerTitle) dockerTitle.textContent = titles[name];
+            updateDockers();
+        }
+
+        function toggleDockerPanel() {
+            const panel = document.getElementById('docker-panel');
+            if (!panel) return;
+            panel.classList.toggle('hidden');
+            panel.classList.toggle('flex');
+        }
+
+        function updateDockers() {
+            const sel = getSelectedObject();
+            if (sel) {
+                const b = getObjectBBox(sel);
+                const xEl = document.getElementById('docker-x');
+                const yEl = document.getElementById('docker-y');
+                const wEl = document.getElementById('docker-w');
+                const hEl = document.getElementById('docker-h');
+                const rotEl = document.getElementById('docker-rot');
+                const fillEl = document.getElementById('prop-fill-color');
+                const strokeEl = document.getElementById('prop-stroke-color');
+
+                if (xEl) xEl.value = b.x.toFixed(1);
+                if (yEl) yEl.value = b.y.toFixed(1);
+                if (wEl) wEl.value = b.w.toFixed(1);
+                if (hEl) hEl.value = b.h.toFixed(1);
+                if (rotEl) rotEl.value = sel.rotation || 0;
+                if (fillEl && sel.fill && sel.fill !== 'none') fillEl.value = sel.fill;
+                if (strokeEl && sel.stroke && sel.stroke !== 'none') strokeEl.value = sel.stroke;
+            }
+            renderObjectManagerList();
+        }
+
+        function updateSelectedFromDocker() {
+            const sel = getSelectedObject();
+            if (!sel) return;
+            const nx = parseFloat(document.getElementById('docker-x').value);
+            const ny = parseFloat(document.getElementById('docker-y').value);
+            const nw = parseFloat(document.getElementById('docker-w').value);
+            const nh = parseFloat(document.getElementById('docker-h').value);
+            const nrot = parseFloat(document.getElementById('docker-rot').value);
+            if (!isNaN(nx) && !isNaN(ny)) moveObjectTo(sel, nx, ny);
+            if (!isNaN(nw) && nw > 1) sel.w = nw;
+            if (!isNaN(nh) && nh > 1) sel.h = nh;
+            if (!isNaN(nrot)) sel.rotation = nrot;
+            saveHistory();
+            renderAll();
+            updatePropertyBar();
+        }
+
+        function getObjLabel(obj) {
+            const names = {
+                rect: 'Retângulo',
+                ellipse: 'Elipse',
+                polygon: 'Polígono',
+                star: 'Estrela',
+                freehand: 'Curva Mão Livre',
+                path: 'Curva Bézier',
+                text: 'Texto Artístico',
+                image: 'Bitmap / Imagem'
+            };
+            return names[obj.type] || 'Objeto';
+        }
+
+        function renderObjectManagerList() {
+            const list = document.getElementById('object-manager-list');
+            if (!list) return;
+            const objs = getObjects();
+            const layerCount = document.getElementById('layer-count');
+            if (layerCount) layerCount.textContent = `${objs.length} objeto(s)`;
+            list.innerHTML = '';
+
+            [...objs].reverse().forEach(obj => {
+                const div = document.createElement('div');
+                const isSel = obj.id === state.selectedId;
+                div.className = `flex items-center justify-between px-2 py-1 rounded text-[11px] cursor-pointer ${isSel ? 'bg-[#0078d7] text-white' : 'hover:bg-[#3f3f3f] text-gray-300'}`;
+                div.innerHTML = `
+                    <span class="truncate"><i class="fa-solid fa-vector-square mr-1.5 opacity-75"></i>${getObjLabel(obj)}</span>
+                    <span class="w-3 h-3 border border-black/40 inline-block" style="background:${obj.fill === 'none' ? '#fff' : obj.fill}"></span>
+                `;
+                div.onclick = () => {
+                    state.selectedId = obj.id;
+                    renderAll();
+                    updatePropertyBar();
+                    updateDockers();
+                };
+                list.appendChild(div);
+            });
+        }
+
+        function saveHistory() {
+            const snap = JSON.stringify(state.pages);
+            state.history = state.history.slice(0, state.historyIndex + 1);
+            state.history.push(snap);
+            state.historyIndex++;
+        }
+
+        function undo() {
+            if (state.historyIndex > 0) {
+                state.historyIndex--;
+                state.pages = JSON.parse(state.history[state.historyIndex]);
+                state.selectedId = null;
+                renderAll();
+                updatePropertyBar();
+            }
+        }
+
+        function redo() {
+            if (state.historyIndex < state.history.length - 1) {
+                state.historyIndex++;
+                state.pages = JSON.parse(state.history[state.historyIndex]);
+                state.selectedId = null;
+                renderAll();
+                updatePropertyBar();
+            }
+        }
+
+        function centerPageInWorkspace() {
+            const ws = document.getElementById('workspace');
+            const svgEl = document.getElementById('corel-svg');
+            if (!ws || !svgEl) return;
+            const rect = ws.getBoundingClientRect();
+            const wsW = rect.width || (window.innerWidth - 320);
+            const wsH = rect.height || (window.innerHeight - 130);
+
+            const scaleX = (wsW * 0.72) / state.pageWidth;
+            const scaleY = (wsH * 0.80) / state.pageHeight;
+            state.zoom = Math.max(0.4, Math.min(scaleX, scaleY));
+
+            state.panX = (wsW - state.pageWidth * state.zoom) / 2;
+            state.panY = (wsH - state.pageHeight * state.zoom) / 2;
+
+            updateViewportTransform();
+            drawRulers();
+        }
+
+        function updateViewportTransform() {
+            const viewportGroup = document.getElementById('viewport-group');
+            const pageSheet = document.getElementById('page-sheet');
+            const pageShadow = document.getElementById('page-shadow');
+            const pageGridOverlay = document.getElementById('page-grid-overlay');
+            if (!viewportGroup) return;
+
+            viewportGroup.setAttribute('transform', `translate(${state.panX}, ${state.panY}) scale(${state.zoom})`);
+            if (pageSheet) {
+                pageSheet.setAttribute('width', state.pageWidth);
+                pageSheet.setAttribute('height', state.pageHeight);
+            }
+            if (pageShadow) {
+                pageShadow.setAttribute('width', state.pageWidth);
+                pageShadow.setAttribute('height', state.pageHeight);
+            }
+            if (pageGridOverlay) {
+                pageGridOverlay.setAttribute('width', state.pageWidth);
+                pageGridOverlay.setAttribute('height', state.pageHeight);
+            }
+
+            const pct = Math.round((state.zoom / 3.1) * 100);
+            const zoomSel = document.getElementById('zoom-select');
+            if (zoomSel && zoomSel.options[0]) {
+                zoomSel.options[0].text = pct + '%';
+                zoomSel.selectedIndex = 0;
+            }
+        }
+
+        function clientToDocCoords(clientX, clientY) {
+            const svgEl = document.getElementById('corel-svg');
+            const rect = svgEl ? svgEl.getBoundingClientRect() : { left: 0, top: 0 };
+            let x = (clientX - rect.left - state.panX) / state.zoom;
+            let y = (clientY - rect.top - state.panY) / state.zoom;
+            if (state.snapToGrid) {
+                x = Math.round(x / 5) * 5;
+                y = Math.round(y / 5) * 5;
+            }
+            return { x, y };
+        }
+
+        function drawRulers() {
+            const topCanvas = document.getElementById('ruler-top');
+            const leftCanvas = document.getElementById('ruler-left');
+            if (!topCanvas || !leftCanvas) return;
+
+            topCanvas.width = topCanvas.offsetWidth || 800;
+            topCanvas.height = 20;
+            leftCanvas.width = 20;
+            leftCanvas.height = leftCanvas.offsetHeight || 600;
+
+            const ctxH = topCanvas.getContext('2d');
+            ctxH.fillStyle = '#333333';
+            ctxH.fillRect(0, 0, topCanvas.width, 20);
+            ctxH.strokeStyle = '#999999';
+            ctxH.fillStyle = '#cccccc';
+            ctxH.font = '9px Segoe UI';
+
+            const step = state.zoom < 1 ? 50 : (state.zoom < 2 ? 25 : 10);
+            const startMM = Math.floor(-state.panX / state.zoom / step) * step;
+            const endMM = Math.ceil((topCanvas.width - state.panX) / state.zoom / step) * step;
+
+            for (let mm = startMM; mm <= endMM; mm += step / 5) {
+                const px = state.panX + mm * state.zoom;
+                if (px < 0 || px > topCanvas.width) continue;
+                const isMajor = Math.abs(mm % step) < 0.01;
+                ctxH.beginPath();
+                ctxH.moveTo(px, isMajor ? 5 : 13);
+                ctxH.lineTo(px, 20);
+                ctxH.stroke();
+                if (isMajor) {
+                    ctxH.fillText(Math.round(mm).toString(), px + 2, 11);
+                }
+            }
+
+            const ctxV = leftCanvas.getContext('2d');
+            ctxV.fillStyle = '#333333';
+            ctxV.fillRect(0, 0, 20, leftCanvas.height);
+            ctxV.strokeStyle = '#999999';
+            ctxV.fillStyle = '#cccccc';
+            ctxV.font = '9px Segoe UI';
+
+            const startV = Math.floor(-state.panY / state.zoom / step) * step;
+            const endV = Math.ceil((leftCanvas.height - state.panY) / state.zoom / step) * step;
+
+            for (let mm = startV; mm <= endV; mm += step / 5) {
+                const py = state.panY + mm * state.zoom;
+                if (py < 0 || py > leftCanvas.height) continue;
+                const isMajor = Math.abs(mm % step) < 0.01;
+                ctxV.beginPath();
+                ctxV.moveTo(isMajor ? 5 : 13, py);
+                ctxV.lineTo(20, py);
+                ctxV.stroke();
+                if (isMajor) {
+                    ctxV.save();
+                    ctxV.translate(10, py - 2);
+                    ctxV.rotate(-Math.PI / 2);
+                    ctxV.fillText(Math.round(mm).toString(), 0, 0);
+                    ctxV.restore();
+                }
+            }
+        }
+
+        function renderAll() {
+            const objectsLayer = document.getElementById('objects-layer');
+            if (!objectsLayer) return;
+            objectsLayer.innerHTML = '';
+            const objs = getObjects();
+            objs.forEach(obj => {
+                const el = createSVGElementForObject(obj);
+                objectsLayer.appendChild(el);
+            });
+            renderSelection();
+            renderObjectManagerList();
+            const sel = getSelectedObject();
+            updateStatusBarColors(sel);
+        }
+
+        function createSVGElementForObject(obj) {
+            const NS = 'http://www.w3.org/2000/svg';
+            let el;
+            const isWireframe = state.viewMode === 'wireframe';
+            const fill = isWireframe ? 'none' : (obj.fill || 'none');
+            const stroke = isWireframe ? '#000000' : (obj.stroke || 'none');
+            const strokeW = isWireframe ? 0.25 : (obj.strokeWidth ?? 0.5);
+
+            if (obj.type === 'rect') {
+                el = document.createElementNS(NS, 'rect');
+                el.setAttribute('x', obj.x);
+                el.setAttribute('y', obj.y);
+                el.setAttribute('width', Math.max(0.5, obj.w));
+                el.setAttribute('height', Math.max(0.5, obj.h));
+                if (obj.rx) el.setAttribute('rx', obj.rx);
+            } else if (obj.type === 'ellipse') {
+                el = document.createElementNS(NS, 'ellipse');
+                el.setAttribute('cx', obj.x + obj.w / 2);
+                el.setAttribute('cy', obj.y + obj.h / 2);
+                el.setAttribute('rx', Math.max(0.5, obj.w / 2));
+                el.setAttribute('ry', Math.max(0.5, obj.h / 2));
+            } else if (obj.type === 'polygon') {
+                el = document.createElementNS(NS, 'polygon');
+                el.setAttribute('points', computePolygonPoints(obj.x, obj.y, obj.w, obj.h, 5));
+            } else if (obj.type === 'star') {
+                el = document.createElementNS(NS, 'polygon');
+                el.setAttribute('points', computeStarPoints(obj.x, obj.y, obj.w, obj.h, 5));
+            } else if (obj.type === 'freehand' || obj.type === 'path') {
+                el = document.createElementNS(NS, 'path');
+                if (obj.points && obj.points.length > 0) {
+                    const d = obj.points.map((p, idx) => `${idx === 0 ? 'M' : 'L'} ${p.x.toFixed(2)} ${p.y.toFixed(2)}`).join(' ') + (obj.closed ? ' Z' : '');
+                    el.setAttribute('d', d);
+                }
+            } else if (obj.type === 'text') {
+                el = document.createElementNS(NS, 'text');
+                el.setAttribute('x', obj.x);
+                el.setAttribute('y', obj.y + (obj.fontSize || 12) * 0.85);
+                el.setAttribute('font-size', obj.fontSize || 12);
+                el.setAttribute('font-family', 'Segoe UI, Inter, sans-serif');
+                el.textContent = obj.text || 'Texto CorelDRAW';
+            } else if (obj.type === 'image') {
+                el = document.createElementNS(NS, 'image');
+                el.setAttribute('x', obj.x);
+                el.setAttribute('y', obj.y);
+                el.setAttribute('width', obj.w);
+                el.setAttribute('height', obj.h);
+                el.setAttribute('href', obj.href);
+            }
+
+            if (!el) el = document.createElementNS(NS, 'g');
+
+            el.dataset.objId = obj.id;
+            if (obj.type !== 'image') {
+                el.setAttribute('fill', fill);
+                el.setAttribute('stroke', stroke);
+                el.setAttribute('stroke-width', strokeW);
+                el.setAttribute('stroke-linejoin', 'round');
+                el.setAttribute('stroke-linecap', 'round');
+            }
+            if (obj.opacity !== undefined && obj.opacity < 1) {
+                el.setAttribute('opacity', obj.opacity);
+            }
+            if (obj.shadow && !isWireframe) {
+                el.setAttribute('filter', 'url(#drop-shadow)');
+            }
+            if (obj.rotation) {
+                const cx = obj.x + obj.w / 2;
+                const cy = obj.y + obj.h / 2;
+                el.setAttribute('transform', `rotate(${obj.rotation} ${cx} ${cy})`);
+            }
+            el.style.cursor = state.tool === 'pick' ? 'move' : 'crosshair';
+            return el;
+        }
+
+        function computePolygonPoints(x, y, w, h, sides) {
+            const cx = x + w / 2, cy = y + h / 2;
+            const rx = w / 2, ry = h / 2;
+            const pts = [];
+            for (let i = 0; i < sides; i++) {
+                const angle = (i * 2 * Math.PI / sides) - Math.PI / 2;
+                pts.push(`${(cx + rx * Math.cos(angle)).toFixed(2)},${(cy + ry * Math.sin(angle)).toFixed(2)}`);
+            }
+            return pts.join(' ');
+        }
+
+        function computeStarPoints(x, y, w, h, spikes) {
+            const cx = x + w / 2, cy = y + h / 2;
+            const outerRx = w / 2, outerRy = h / 2;
+            const innerRx = outerRx * 0.42, innerRy = outerRy * 0.42;
+            const pts = [];
+            for (let i = 0; i < spikes * 2; i++) {
+                const rX = i % 2 === 0 ? outerRx : innerRx;
+                const rY = i % 2 === 0 ? outerRy : innerRy;
+                const angle = (i * Math.PI / spikes) - Math.PI / 2;
+                pts.push(`${(cx + rX * Math.cos(angle)).toFixed(2)},${(cy + rY * Math.sin(angle)).toFixed(2)}`);
+            }
+            return pts.join(' ');
+        }
+
+        function getObjectBBox(obj) {
+            if (!obj) return { x: 0, y: 0, w: 0, h: 0 };
+            if (obj.type === 'text') {
+                const fs = obj.fontSize || 12;
+                const estW = Math.max(15, (obj.text || '').length * fs * 0.55);
+                return { x: obj.x, y: obj.y, w: estW, h: fs * 1.1 };
+            }
+            return { x: obj.x, y: obj.y, w: obj.w, h: obj.h };
+        }
+
+        function renderSelection() {
+            const selectionLayer = document.getElementById('selection-layer');
+            if (!selectionLayer) return;
+            selectionLayer.innerHTML = '';
+            const sel = getSelectedObject();
+            const statusInfo = document.getElementById('status-info');
+
+            if (!sel) {
+                if (statusInfo) statusInfo.textContent = 'Nenhum objeto selecionado. Arraste na página para desenhar.';
+                return;
+            }
+
+            const b = getObjectBBox(sel);
+            if (statusInfo) statusInfo.textContent = `${getObjLabel(sel)} selecionado (${b.w.toFixed(1)} × ${b.h.toFixed(1)} mm)`;
+
+            const NS = 'http://www.w3.org/2000/svg';
+            const hs = 6 / state.zoom;
+
+            const box = document.createElementNS(NS, 'rect');
+            box.setAttribute('x', b.x);
+            box.setAttribute('y', b.y);
+            box.setAttribute('width', b.w);
+            box.setAttribute('height', b.h);
+            box.setAttribute('fill', 'none');
+            box.setAttribute('stroke', '#0078d7');
+            box.setAttribute('stroke-width', 1 / state.zoom);
+            box.setAttribute('stroke-dasharray', `${3 / state.zoom} ${2 / state.zoom}`);
+            selectionLayer.appendChild(box);
+
+            const handles = [
+                { id: 'nw', x: b.x, y: b.y, cursor: 'nwse-resize' },
+                { id: 'n',  x: b.x + b.w / 2, y: b.y, cursor: 'ns-resize' },
+                { id: 'ne', x: b.x + b.w, y: b.y, cursor: 'nesw-resize' },
+                { id: 'e',  x: b.x + b.w, y: b.y + b.h / 2, cursor: 'ew-resize' },
+                { id: 'se', x: b.x + b.w, y: b.y + b.h, cursor: 'nwse-resize' },
+                { id: 's',  x: b.x + b.w / 2, y: b.y + b.h, cursor: 'ns-resize' },
+                { id: 'sw', x: b.x, y: b.y + b.h, cursor: 'nesw-resize' },
+                { id: 'w',  x: b.x, y: b.y + b.h / 2, cursor: 'ew-resize' }
+            ];
+
+            handles.forEach(h => {
+                const rect = document.createElementNS(NS, 'rect');
+                rect.setAttribute('x', h.x - hs / 2);
+                rect.setAttribute('y', h.y - hs / 2);
+                rect.setAttribute('width', hs);
+                rect.setAttribute('height', hs);
+                rect.setAttribute('fill', '#000000');
+                rect.setAttribute('stroke', '#ffffff');
+                rect.setAttribute('stroke-width', 1 / state.zoom);
+                rect.setAttribute('data-handle', h.id);
+                rect.style.cursor = h.cursor;
+                selectionLayer.appendChild(rect);
+            });
+        }
+
+        function moveObjectTo(obj, newX, newY) {
+            const dx = newX - obj.x;
+            const dy = newY - obj.y;
+            obj.x = newX;
+            obj.y = newY;
+            if (obj.points && obj.points.length > 0) {
+                obj.points = obj.points.map(p => ({ x: p.x + dx, y: p.y + dy }));
+            }
+        }
+
+        function resizeObjectByHandle(obj, handle, pt, orig) {
+            let { x, y, w, h } = orig;
+            if (handle.includes('e')) w = Math.max(2, pt.x - orig.x);
+            if (handle.includes('s')) h = Math.max(2, pt.y - orig.y);
+            if (handle.includes('w')) {
+                const right = orig.x + orig.w;
+                x = Math.min(right - 2, pt.x);
+                w = right - x;
+            }
+            if (handle.includes('n')) {
+                const bottom = orig.y + orig.h;
+                y = Math.min(bottom - 2, pt.y);
+                h = bottom - y;
+            }
+
+            if (obj.points && obj.points.length > 0 && orig.w > 0 && orig.h > 0) {
+                const sx = w / orig.w;
+                const sy = h / orig.h;
+                obj.points = obj.points.map(p => ({
+                    x: x + (p.x - orig.x) * sx,
+                    y: y + (p.y - orig.y) * sy
+                }));
+            }
+
+            obj.x = x;
+            obj.y = y;
+            obj.w = w;
+            obj.h = h;
+            if (obj.type === 'text') {
+                obj.fontSize = Math.max(6, Math.round(h * 0.9));
+            }
+        }
+
+        function updatePropertyBar() {
+            const bar = document.getElementById('property-bar');
+            if (!bar) return;
+
+            if (!state.hasDocument || state.activeTab === 'welcome') {
+                bar.innerHTML = `
+                    <select class="corel-select w-28 opacity-50" disabled><option>A4</option></select>
+                    <div class="flex items-center gap-1 ml-1 opacity-50">
+                        <input type="text" value="" class="corel-input w-20" disabled>
+                        <span class="text-gray-500 mx-0.5">×</span>
+                        <input type="text" value="" class="corel-input w-20" disabled>
+                    </div>
+                    <div class="separator-v"></div>
+                    <span class="text-gray-500">Unidades:</span>
+                    <select class="corel-select w-24 opacity-50" disabled><option>milímetros</option></select>
+                `;
+                return;
+            }
+
+            const sel = getSelectedObject();
+            if (!sel) {
+                bar.innerHTML = `
+                    <select class="corel-select w-28" onchange="changePaperSizeFromBar(this.value)">
+                        <option value="A4" ${state.pageWidth === 210 && state.pageHeight === 297 ? 'selected' : ''}>A4</option>
+                        <option value="A3" ${state.pageWidth === 297 && state.pageHeight === 420 ? 'selected' : ''}>A3</option>
+                        <option value="A5" ${state.pageWidth === 148 && state.pageHeight === 210 ? 'selected' : ''}>A5</option>
+                        <option value="Carta" ${state.pageWidth === 215.9 ? 'selected' : ''}>Carta</option>
+                        <option value="Custom" selected>Personalizado</option>
+                    </select>
+                    <div class="flex items-center gap-1 ml-1">
+                        <input type="number" value="${state.pageWidth}" step="1" class="corel-input w-20" onchange="resizePageDimension('w', this.value)">
+                        <span class="text-gray-400">×</span>
+                        <input type="number" value="${state.pageHeight}" step="1" class="corel-input w-20" onchange="resizePageDimension('h', this.value)">
+                        <span class="text-gray-400">mm</span>
+                    </div>
+                    <div class="separator-v"></div>
+                    <button class="tool-btn ${state.pageHeight >= state.pageWidth ? 'active' : ''}" onclick="setPageOrientation('portrait')">
+                        <div class="w-2.5 h-3.5 border border-current"></div>
+                    </button>
+                    <button class="tool-btn ${state.pageWidth > state.pageHeight ? 'active' : ''}" onclick="setPageOrientation('landscape')">
+                        <div class="w-3.5 h-2.5 border border-current"></div>
+                    </button>
+                    <div class="separator-v"></div>
+                    <span class="text-gray-400">Unidades:</span>
+                    <select class="corel-select w-24"><option>milímetros</option></select>
+                `;
+            } else {
+                const b = getObjectBBox(sel);
+                bar.innerHTML = `
+                    <div class="flex items-center gap-1">
+                        <span class="text-gray-400">X:</span>
+                        <input type="number" step="0.5" value="${b.x.toFixed(1)}" class="corel-input w-16" onchange="setObjProp('x', parseFloat(this.value))">
+                        <span class="text-gray-400">Y:</span>
+                        <input type="number" step="0.5" value="${b.y.toFixed(1)}" class="corel-input w-16" onchange="setObjProp('y', parseFloat(this.value))">
+                    </div>
+                    <div class="separator-v"></div>
+                    <div class="flex items-center gap-1">
+                        <span class="text-gray-400">L:</span>
+                        <input type="number" step="0.5" value="${b.w.toFixed(1)}" class="corel-input w-16" onchange="setObjProp('w', parseFloat(this.value))">
+                        <span class="text-gray-400">A:</span>
+                        <input type="number" step="0.5" value="${b.h.toFixed(1)}" class="corel-input w-16" onchange="setObjProp('h', parseFloat(this.value))">
+                    </div>
+                    <div class="separator-v"></div>
+                    <button class="tool-btn text-red-400" title="Excluir" onclick="deleteSelected()"><i class="fa-solid fa-trash-can"></i></button>
+                `;
+            }
+        }
+
+        function changePaperSizeFromBar(val) {
+            const sizes = { A4: [210, 297], A3: [297, 420], A5: [148, 210], Carta: [215.9, 279.4] };
+            if (sizes[val]) {
+                state.pageWidth = sizes[val][0];
+                state.pageHeight = sizes[val][1];
+                centerPageInWorkspace();
+                updatePropertyBar();
+            }
+        }
+
+        function resizePageDimension(dim, val) {
+            const n = parseFloat(val);
+            if (n > 10) {
+                if (dim === 'w') state.pageWidth = n;
+                if (dim === 'h') state.pageHeight = n;
+                centerPageInWorkspace();
+            }
+        }
+
+        function setPageOrientation(orient) {
+            const { pageWidth: w, pageHeight: h } = state;
+            if ((orient === 'portrait' && w > h) || (orient === 'landscape' && h > w)) {
+                state.pageWidth = h;
+                state.pageHeight = w;
+                centerPageInWorkspace();
+                updatePropertyBar();
+            }
+        }
+
+        function togglePageOrientation() {
+            setPageOrientation(state.pageWidth > state.pageHeight ? 'portrait' : 'landscape');
+        }
+
+        function addPage() {
+            state.pages.push([]);
+            state.currentPageIndex = state.pages.length - 1;
+            state.selectedId = null;
+            renderPageTabs();
+            renderAll();
+        }
+
+        function prevPage() {
+            if (state.currentPageIndex > 0) {
+                state.currentPageIndex--;
+                state.selectedId = null;
+                renderPageTabs();
+                renderAll();
+            }
+        }
+
+        function nextPage() {
+            if (state.currentPageIndex < state.pages.length - 1) {
+                state.currentPageIndex++;
+                state.selectedId = null;
+                renderPageTabs();
+                renderAll();
+            }
+        }
+
+        function renderPageTabs() {
+            const counter = document.getElementById('page-counter');
+            if (counter) counter.textContent = `${state.currentPageIndex + 1} de ${state.pages.length}`;
+            const list = document.getElementById('page-tabs-list');
+            if (!list) return;
+            list.innerHTML = '';
+            state.pages.forEach((_, idx) => {
+                const span = document.createElement('span');
+                const active = idx === state.currentPageIndex;
+                span.className = `px-2 py-0.5 rounded-t text-[10px] cursor-pointer ${active ? 'bg-[#454545] text-white border-t border-[#0078d7]' : 'bg-[#333] text-gray-400 hover:text-white'}`;
+                span.textContent = `Página ${idx + 1}`;
+                span.onclick = () => {
+                    state.currentPageIndex = idx;
+                    state.selectedId = null;
+                    renderPageTabs();
+                    renderAll();
+                };
+                list.appendChild(span);
+            });
+        }
+
+        function setZoomLevel(val) {
+            if (val === 'fit') {
+                centerPageInWorkspace();
+                return;
+            }
+            const pct = parseFloat(val);
+            if (!isNaN(pct)) {
+                state.zoom = pct * 3.1;
+                updateViewportTransform();
+                drawRulers();
+                renderSelection();
+            }
+        }
+
+        function fitPageToScreen() {
+            centerPageInWorkspace();
+        }
+
+        function setViewMode(mode) {
+            state.viewMode = mode;
+            renderAll();
+        }
+
+        function toggleGrid() {
+            state.showGrid = !state.showGrid;
+            const overlay = document.getElementById('page-grid-overlay');
+            const btnGrid = document.getElementById('btn-grid');
+            if (overlay) overlay.classList.toggle('hidden', !state.showGrid);
+            if (btnGrid) btnGrid.classList.toggle('active', state.showGrid);
+        }
+
+        function toggleSnap() {
+            state.snapToGrid = !state.snapToGrid;
+            const btnSnap = document.getElementById('btn-snap');
+            if (btnSnap) btnSnap.classList.toggle('active', state.snapToGrid);
+        }
+
+        function triggerImportSVG() {
+            const importer = document.getElementById('file-importer');
+            if (importer) importer.click();
+        }
+
+        function handleFileImport(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                if (!state.hasDocument) {
+                    state.hasDocument = true;
+                    state.pages = [[]];
+                    state.currentPageIndex = 0;
+                    const tabDoc1 = document.getElementById('tab-doc1');
+                    if (tabDoc1) tabDoc1.classList.remove('hidden');
+                }
+                switchTab('doc1');
+                centerPageInWorkspace();
+                getObjects().push({
+                    id: 'obj_' + Date.now(),
+                    type: 'image',
+                    x: 20,
+                    y: 20,
+                    w: 100,
+                    h: 100,
+                    href: ev.target.result,
+                    opacity: 1,
+                    rotation: 0
+                });
+                saveHistory();
+                renderAll();
+            };
+            reader.readAsDataURL(file);
+            e.target.value = '';
+        }
+
+        function buildCleanSVGString() {
+            const objectsLayer = document.getElementById('objects-layer');
+            const clone = objectsLayer ? objectsLayer.cloneNode(true) : { innerHTML: '' };
+            return `<svg xmlns="http://www.w3.org/2000/svg" width="${state.pageWidth}mm" height="${state.pageHeight}mm" viewBox="0 0 ${state.pageWidth} ${state.pageHeight}">
+                <rect width="100%" height="100%" fill="#ffffff"/>
+                ${clone.innerHTML}
+            </svg>`;
+        }
+
+        function exportSVG() {
+            if (!state.hasDocument) return;
+            const svgStr = buildCleanSVGString();
+            const blob = new Blob([svgStr], { type: 'image/svg+xml;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${state.docTitle || 'arte_coreldraw'}.svg`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function exportPNG() {
+            if (!state.hasDocument) return;
+            const svgStr = buildCleanSVGString();
+            const img = new Image();
+            const svgBlob = new Blob([svgStr], { type: 'image/svg+xml;charset=utf-8' });
+            const url = URL.createObjectURL(svgBlob);
+
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                const scale = 5;
+                canvas.width = state.pageWidth * scale;
+                canvas.height = state.pageHeight * scale;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                URL.revokeObjectURL(url);
+
+                const pngUrl = canvas.toDataURL('image/png');
+                const a = document.createElement('a');
+                a.href = pngUrl;
+                a.download = `${state.docTitle || 'arte_coreldraw'}.png`;
+                a.click();
+            };
+            img.src = url;
+        }
+
+        function loadSampleArtwork(kind) {
+            state.hasDocument = true;
+            state.pages = [[]];
+            state.currentPageIndex = 0;
+            const title = kind === 'card' ? 'Cartão_Visita.cdr' : 'studio_arte_vetorial.cdr';
+            state.docTitle = title;
+            const doc1Title = document.getElementById('doc1-tab-title');
+            const doc1Tab = document.getElementById('tab-doc1');
+            if (doc1Title) doc1Title.textContent = title;
+            if (doc1Tab) doc1Tab.classList.remove('hidden');
+            switchTab('doc1');
+            state.pageWidth = 210;
+            state.pageHeight = 297;
+            const objs = [];
+
+            if (kind === 'card') {
+                state.pageWidth = 90;
+                state.pageHeight = 50;
+                objs.push(
+                    { id: 's1', type: 'rect', x: 0, y: 0, w: 90, h: 50, fill: '#1e1e1e', stroke: 'none', strokeWidth: 0, opacity: 1, rotation: 0 },
+                    { id: 's2', type: 'polygon', x: 58, y: 8, w: 26, h: 26, fill: '#69be28', stroke: '#ffffff', strokeWidth: 0.4, opacity: 0.9, rotation: 15 },
+                    { id: 's3', type: 'text', x: 8, y: 15, w: 50, h: 10, text: 'ESTÚDIO VETORIAL', fontSize: 6.5, fill: '#ffffff', stroke: 'none', strokeWidth: 0, opacity: 1, rotation: 0 },
+                    { id: 's4', type: 'text', x: 8, y: 24, w: 45, h: 8, text: 'Design Gráfico & Identidade', fontSize: 4, fill: '#69be28', stroke: 'none', strokeWidth: 0, opacity: 1, rotation: 0 }
+                );
+            } else {
+                objs.push(
+                    { id: 'r1', type: 'rect', x: 25, y: 30, w: 160, h: 220, rx: 8, fill: '#f3dfc1', stroke: '#b8860b', strokeWidth: 2, opacity: 1, rotation: 0, shadow: true },
+                    { id: 'r2', type: 'ellipse', x: 105, y: 55, w: 65, h: 65, fill: '#fff8e7', stroke: '#9c6f24', strokeWidth: 1.5, opacity: 1, rotation: 0 },
+                    { id: 'r3', type: 'ellipse', x: 65, y: 130, w: 55, h: 75, fill: '#8b6b4e', stroke: '#4a3520', strokeWidth: 0.8, opacity: 1, rotation: 0 },
+                    { id: 'r4', type: 'ellipse', x: 75, y: 92, w: 36, h: 36, fill: '#9c7a5b', stroke: '#4a3520', strokeWidth: 0.8, opacity: 1, rotation: 0 },
+                    { id: 'r5', type: 'star', x: 35, y: 40, w: 30, h: 30, fill: '#d4a017', stroke: '#8b6508', strokeWidth: 0.6, opacity: 1, rotation: 0 },
+                    { id: 'r6', type: 'text', x: 45, y: 222, w: 120, h: 14, text: 'CorelDRAW X8 Vector Art', fontSize: 11, fill: '#5c3a08', stroke: 'none', strokeWidth: 0, opacity: 1, rotation: 0 }
+                );
+            }
+
+            state.pages = [objs];
+            state.currentPageIndex = 0;
+            state.selectedId = objs[0].id;
+            centerPageInWorkspace();
+            renderPageTabs();
+            renderAll();
+            updatePropertyBar();
+            updateDockers();
+            saveHistory();
+        }
+
+        Object.assign(window, {
+            toggleDropdown, closeAllDropdowns, openNewDocModal, closeNewDocModal,
+            openPrintModal, closePrintModal, executePrint,
+            setModalOrientation, confirmCreateNewDocument,
+            switchTab, closeActiveTab, selectTool, toggleDropShadow, openFillDialog,
+            triggerImportSVG, handleFileImport, exportSVG, exportPNG,
+            cutSelected, copySelected, pasteClipboard, undo, redo,
+            duplicateSelected, deleteSelected, selectAll, setViewMode,
+            toggleGrid, toggleSnap, fitPageToScreen, setZoomLevel,
+            addPage, prevPage, nextPage, togglePageOrientation, setPageOrientation,
+            changePaperSizeFromBar, resizePageDimension, bringToFront, sendToBack,
+            convertToCurves, insertQuickGrid, switchDocker, toggleDockerPanel,
+            alignObjects, updateSelectedFromDocker, applyFillColor, applyStrokeColor,
+            applyStrokeWidth, applyOpacity, setObjProp, loadSampleArtwork
+        });
+    </script>
+</head>
+<body class="flex flex-col h-screen w-screen overflow-hidden">
+
+    <!-- 1. BARRA DE MENUS SUPERIOR -->
+    <div class="corel-menubar relative" id="menubar">
+        <div class="flex items-center mr-2 text-[#69be28]" title="CorelDRAW X8">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2C7.5 2 4 6.5 4 12c0 3.2 1.8 6.8 5 9l3-5-3-2c-1-1.2-1.5-2.8-1-4.5.6-2 2.3-3.5 4-3.5s3.4 1.5 4 3.5c.5 1.7 0 3.3-1 4.5l-3 2 3 5c3.2-2.2 5-5.8 5-9 0-5.5-3.5-10-8-10z"/>
+            </svg>
+        </div>
+
+        <div class="menu-item" onclick="toggleDropdown('menu-arquivo')">Arquivo</div>
+        <div class="menu-item" onclick="toggleDropdown('menu-editar')">Editar</div>
+        <div class="menu-item" onclick="toggleDropdown('menu-exibir')">Exibir</div>
+        <div class="menu-item" onclick="toggleDropdown('menu-layout')">Layout</div>
+        <div class="menu-item" onclick="toggleDropdown('menu-objeto')">Objeto</div>
+        <div class="menu-item" onclick="toggleDropdown('menu-efeitos')">Efeitos</div>
+        <div class="menu-item" onclick="toggleDropdown('menu-bitmaps')">Bitmaps</div>
+        <div class="menu-item" onclick="toggleDropdown('menu-texto')">Texto</div>
+        <div class="menu-item" onclick="toggleDropdown('menu-tabela')">Tabela</div>
+        <div class="menu-item" onclick="toggleDropdown('menu-ferramentas')">Ferramentas</div>
+        <div class="menu-item" onclick="toggleDropdown('menu-janela')">Janela</div>
+        <div class="menu-item" onclick="toggleDropdown('menu-ajuda')">Ajuda</div>
+
+        <!-- Dropdown Arquivo -->
+        <div id="menu-arquivo" class="dropdown-menu hidden" style="left: 26px;">
+            <div class="dropdown-item" onclick="openNewDocModal(); closeAllDropdowns();">
+                <span>Novo...</span><span class="text-gray-400 text-[11px]">Ctrl+N</span>
+            </div>
+            <div class="dropdown-item" onclick="triggerImportSVG(); closeAllDropdowns();">
+                <span>Importar SVG / Imagem...</span><span class="text-gray-400 text-[11px]">Ctrl+I</span>
+            </div>
+            <div class="dropdown-divider"></div>
+            <div class="dropdown-item" onclick="exportSVG(); closeAllDropdowns();">
+                <span>Exportar como SVG...</span><span class="text-gray-400 text-[11px]">Ctrl+E</span>
+            </div>
+            <div class="dropdown-item" onclick="exportPNG(); closeAllDropdowns();">
+                <span>Exportar como PNG (300 dpi)...</span>
+            </div>
+            <div class="dropdown-divider"></div>
+            <div class="dropdown-item" onclick="openPrintModal(); closeAllDropdowns();">
+                <span>Imprimir...</span><span class="text-gray-400 text-[11px]">Ctrl+P</span>
+            </div>
+            <div class="dropdown-divider"></div>
+            <div class="dropdown-item" onclick="closeActiveTab(); closeAllDropdowns();">
+                <span>Fechar documento</span><span class="text-gray-400 text-[11px]">Ctrl+W</span>
+            </div>
+        </div>
+
+        <!-- Dropdown Editar -->
+        <div id="menu-editar" class="dropdown-menu hidden" style="left: 78px;">
+            <div class="dropdown-item" onclick="undo(); closeAllDropdowns();">
+                <span>Desfazer</span><span class="text-gray-400 text-[11px]">Ctrl+Z</span>
+            </div>
+            <div class="dropdown-item" onclick="redo(); closeAllDropdowns();">
+                <span>Refazer</span><span class="text-gray-400 text-[11px]">Ctrl+Shift+Z</span>
+            </div>
+            <div class="dropdown-divider"></div>
+            <div class="dropdown-item" onclick="duplicateSelected(); closeAllDropdowns();">
+                <span>Duplicar</span><span class="text-gray-400 text-[11px]">Ctrl+D</span>
+            </div>
+            <div class="dropdown-item" onclick="deleteSelected(); closeAllDropdowns();">
+                <span>Excluir</span><span class="text-gray-400 text-[11px]">Delete</span>
+            </div>
+        </div>
+
+        <!-- Dropdown Exibir -->
+        <div id="menu-exibir" class="dropdown-menu hidden" style="left: 122px;">
+            <div class="dropdown-item" onclick="setViewMode('wireframe'); closeAllDropdowns();">
+                <span>Aramado (Wireframe)</span>
+            </div>
+            <div class="dropdown-item" onclick="setViewMode('enhanced'); closeAllDropdowns();">
+                <span>Aprimorado ✓</span>
+            </div>
+            <div class="dropdown-divider"></div>
+            <div class="dropdown-item" onclick="toggleGrid(); closeAllDropdowns();">
+                <span>Grade do documento</span>
+            </div>
+            <div class="dropdown-item" onclick="fitPageToScreen(); closeAllDropdowns();">
+                <span>Zoom para página</span><span class="text-gray-400 text-[11px]">Shift+F4</span>
+            </div>
+        </div>
+
+        <!-- Dropdown Layout -->
+        <div id="menu-layout" class="dropdown-menu hidden" style="left: 165px;">
+            <div class="dropdown-item" onclick="addPage(); closeAllDropdowns();">
+                <span>Inserir página</span>
+            </div>
+            <div class="dropdown-item" onclick="togglePageOrientation(); closeAllDropdowns();">
+                <span>Alternar Retrato / Paisagem</span>
+            </div>
+        </div>
+
+        <!-- Dropdown Objeto -->
+        <div id="menu-objeto" class="dropdown-menu hidden" style="left: 215px;">
+            <div class="dropdown-item" onclick="bringToFront(); closeAllDropdowns();">
+                <span>Para a frente da página</span><span class="text-gray-400 text-[11px]">Ctrl+Home</span>
+            </div>
+            <div class="dropdown-item" onclick="sendToBack(); closeAllDropdowns();">
+                <span>Para trás da página</span><span class="text-gray-400 text-[11px]">Ctrl+End</span>
+            </div>
+            <div class="dropdown-divider"></div>
+            <div class="dropdown-item" onclick="convertToCurves(); closeAllDropdowns();">
+                <span>Converter em curvas</span><span class="text-gray-400 text-[11px]">Ctrl+Q</span>
+            </div>
+        </div>
+
+        <div id="menu-efeitos" class="dropdown-menu hidden" style="left: 265px;">
+            <div class="dropdown-item" onclick="toggleDropShadow(); closeAllDropdowns();">
+                <span>Adicionar / Remover Sombra</span>
+            </div>
+        </div>
+        <div id="menu-bitmaps" class="dropdown-menu hidden" style="left: 315px;">
+            <div class="dropdown-item" onclick="exportPNG(); closeAllDropdowns();">
+                <span>Converter em Bitmap (PNG)</span>
+            </div>
+        </div>
+        <div id="menu-texto" class="dropdown-menu hidden" style="left: 370px;">
+            <div class="dropdown-item" onclick="selectTool('text'); closeAllDropdowns();">
+                <span>Ferramenta Texto (F8)</span>
+            </div>
+        </div>
+        <div id="menu-tabela" class="dropdown-menu hidden" style="left: 415px;">
+            <div class="dropdown-item" onclick="insertQuickGrid(); closeAllDropdowns();">
+                <span>Inserir Grade Rápida 3x3</span>
+            </div>
+        </div>
+        <div id="menu-ferramentas" class="dropdown-menu hidden" style="left: 465px;">
+            <div class="dropdown-item" onclick="openNewDocModal(); closeAllDropdowns();">
+                <span>Opções de Documento...</span>
+            </div>
+        </div>
+        <div id="menu-janela" class="dropdown-menu hidden" style="left: 540px;">
+            <div class="dropdown-item" onclick="switchDocker('align'); closeAllDropdowns();">
+                <span>Alinhar e distribuir</span>
+            </div>
+            <div class="dropdown-item" onclick="switchDocker('objects'); closeAllDropdowns();">
+                <span>Gerenciador de objetos</span>
+            </div>
+            <div class="dropdown-item" onclick="switchDocker('props'); closeAllDropdowns();">
+                <span>Propriedades do objeto</span>
+            </div>
+        </div>
+        <div id="menu-ajuda" class="dropdown-menu hidden" style="left: 590px;">
+            <div class="dropdown-item" onclick="switchTab('welcome'); closeAllDropdowns();">
+                <span>Tela de boas-vindas</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. BARRA DE FERRAMENTAS PADRÃO -->
+    <div class="corel-toolbar">
+        <button class="tool-btn" title="Novo (Ctrl+N)" onclick="openNewDocModal()">
+            <i class="fa-regular fa-file text-[#69be28]"></i>
+        </button>
+        <button class="tool-btn" title="Abrir / Importar SVG" onclick="triggerImportSVG()">
+            <i class="fa-regular fa-folder-open text-amber-400"></i>
+        </button>
+        <button class="tool-btn" title="Salvar como SVG" onclick="exportSVG()">
+            <i class="fa-regular fa-floppy-disk text-blue-400"></i>
+        </button>
+        <div class="separator-v"></div>
+        <button class="tool-btn" title="Recortar (Ctrl+X)" onclick="cutSelected()">
+            <i class="fa-solid fa-scissors"></i>
+        </button>
+        <button class="tool-btn" title="Copiar (Ctrl+C)" onclick="copySelected()">
+            <i class="fa-regular fa-copy"></i>
+        </button>
+        <button class="tool-btn" title="Colar (Ctrl+V)" onclick="pasteClipboard()">
+            <i class="fa-regular fa-paste"></i>
+        </button>
+        <div class="separator-v"></div>
+        <button class="tool-btn" title="Desfazer (Ctrl+Z)" onclick="undo()">
+            <i class="fa-solid fa-rotate-left text-amber-300"></i>
+        </button>
+        <button class="tool-btn" title="Refazer (Ctrl+Shift+Z)" onclick="redo()">
+            <i class="fa-solid fa-rotate-right text-amber-300"></i>
+        </button>
+        <div class="separator-v"></div>
+        <button class="tool-btn" title="Imprimir (Ctrl+P)" onclick="openPrintModal()">
+            <i class="fa-solid fa-print text-gray-200"></i>
+        </button>
+        <div class="separator-v"></div>
+        <!-- Botão personalizado com forma azul arredondada sem texto -->
+        <button class="tool-btn !w-9 !h-5 !bg-[#000e3b] hover:!bg-[#00185c] !rounded-full !border !border-[#002880] flex items-center justify-center shadow-inner transition" title="Acessar ShesCX" onclick="window.open('https://6shescx.my.canva.site/shescx6', '_blank')"></button>
+        <div class="separator-v"></div>
+        <select id="zoom-select" class="corel-select w-20" onchange="setZoomLevel(this.value)">
+            <option value="0.58" selected>58%</option>
+            <option value="0.25">25%</option>
+            <option value="0.50">50%</option>
+            <option value="0.75">75%</option>
+            <option value="1.00">100%</option>
+            <option value="1.50">150%</option>
+            <option value="2.00">200%</option>
+            <option value="fit">Para página</option>
+        </select>
+        <div class="separator-v"></div>
+        <button class="tool-btn" id="btn-grid" title="Mostrar Grade" onclick="toggleGrid()">
+            <i class="fa-solid fa-border-all"></i>
+        </button>
+        <button class="tool-btn" id="btn-snap" title="Alinhar à Grade" onclick="toggleSnap()">
+            <i class="fa-solid fa-magnet text-red-400"></i>
+        </button>
+    </div>
+
+    <!-- 3. BARRA DE PROPRIEDADES DINÂMICA -->
+    <div class="corel-toolbar text-[11px]" id="property-bar"></div>
+
+    <!-- 4. ABAS DE DOCUMENTOS -->
+    <div class="doc-tabs" id="doc-tabs-bar">
+        <div class="doc-tab active" id="tab-welcome" onclick="switchTab('welcome')">
+            <i class="fa-solid fa-house text-[10px]"></i>
+            <span>Tela de boas-vindas</span>
+        </div>
+        <div class="doc-tab hidden" id="tab-doc1" onclick="switchTab('doc1')">
+            <span id="doc1-tab-title">Sem título-1</span>
+            <span class="ml-2 hover:bg-black/30 px-1 rounded text-[10px]" onclick="event.stopPropagation(); closeActiveTab();">×</span>
+        </div>
+        <div class="doc-tab !px-2 !bg-transparent hover:!bg-[#3a3a3a]" title="Novo documento" onclick="openNewDocModal()">
+            <i class="fa-solid fa-plus text-[10px]"></i>
+        </div>
+    </div>
+
+    <!-- 5. CORPO PRINCIPAL -->
+    <div class="flex flex-1 overflow-hidden relative">
+
+        <!-- CAIXA DE FERRAMENTAS ESQUERDA -->
+        <div class="left-toolbox" id="left-toolbox">
+            <div class="toolbox-item active" data-tool="pick" title="Ferramenta Seleção" onclick="selectTool('pick')">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M5 3l14 9-6 1.5 3.5 6.5-2.5 1.3-3.5-6.5L5 19V3z"/></svg>
+            </div>
+            <div class="toolbox-item" data-tool="shape" title="Forma" onclick="selectTool('shape')">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 18C4 10 10 4 18 4"/><rect x="2" y="16" width="4" height="4" fill="white"/><rect x="16" y="2" width="4" height="4" fill="white"/></svg>
+            </div>
+            <div class="toolbox-item" data-tool="zoom" title="Zoom" onclick="selectTool('zoom')">
+                <i class="fa-solid fa-magnifying-glass text-xs"></i>
+            </div>
+            <div class="toolbox-item" data-tool="freehand" title="Mão Livre" onclick="selectTool('freehand')">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 17c3-6 6-10 9-4s6 4 9-6"/></svg>
+            </div>
+            <div class="toolbox-item" data-tool="rect" title="Retângulo (F6)" onclick="selectTool('rect')">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14"/></svg>
+            </div>
+            <div class="toolbox-item" data-tool="ellipse" title="Elipse (F7)" onclick="selectTool('ellipse')">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="12" rx="9" ry="6"/></svg>
+            </div>
+            <div class="toolbox-item" data-tool="polygon" title="Polígono (Y)" onclick="selectTool('polygon')">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12,3 21,9 18,20 6,20 3,9"/></svg>
+            </div>
+            <div class="toolbox-item" data-tool="star" title="Estrela" onclick="selectTool('star')">
+                <i class="fa-regular fa-star text-xs"></i>
+            </div>
+            <div class="toolbox-item" data-tool="text" title="Texto (F8)" onclick="selectTool('text')">
+                <span class="font-serif font-bold text-sm">A</span>
+            </div>
+            <div class="toolbox-item" data-tool="fill" title="Preenchimento" onclick="openFillDialog()">
+                <i class="fa-solid fa-fill-drip text-xs"></i>
+            </div>
+        </div>
+
+        <!-- TELA DE BOAS-VINDAS / EDITOR -->
+        <div class="flex-1 flex flex-col overflow-hidden relative">
+
+            <!-- TELA DE BOAS-VINDAS -->
+            <div id="welcome-screen" class="flex-1 bg-[#2b2b2b] flex overflow-auto p-8 gap-10">
+                <div class="w-64 flex flex-col border-r border-[#444] pr-6 shrink-0">
+                    <div class="flex items-center gap-3 mb-8">
+                        <div class="w-9 h-9 bg-[#0078d7] flex items-center justify-center rounded-sm">
+                            <i class="fa-solid fa-play text-white text-sm"></i>
+                        </div>
+                        <h1 class="text-3xl font-light text-white tracking-wide">Começar</h1>
+                    </div>
+
+                    <div class="space-y-4 text-[13px]">
+                        <div class="cursor-pointer hover:text-[#69be28] text-white font-medium" onclick="openNewDocModal()">
+                            Novo documento
+                        </div>
+                        <div class="cursor-pointer hover:text-[#69be28] text-gray-300" onclick="loadSampleArtwork('card')">
+                            Novo baseado em modelo
+                        </div>
+                        <div>
+                            <div class="text-gray-300">Abrir recente</div>
+                            <div class="text-xs text-[#69be28] hover:underline cursor-pointer mt-0.5" onclick="loadSampleArtwork('rabbit')">
+                                studio_arte_vetorial.cdr
+                            </div>
+                        </div>
+                        <div class="cursor-pointer hover:text-[#69be28] text-gray-300" onclick="triggerImportSVG()">
+                            Abra outros...
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex-1 flex flex-col items-center justify-center">
+                    <div class="bg-[#f8f5ec] p-6 rounded shadow-2xl max-w-xl w-full flex flex-col items-center border border-[#444]">
+                        <svg viewBox="0 0 400 320" class="w-full h-72">
+                            <rect x="65" y="25" width="270" height="260" rx="8" fill="#f3dfc1" stroke="#b8860b" stroke-width="5"/>
+                            <circle cx="245" cy="115" r="68" fill="#fff8e7" stroke="#9c6f24" stroke-width="4"/>
+                            <ellipse cx="185" cy="195" rx="45" ry="55" fill="#8b6b4e"/>
+                            <circle cx="185" cy="130" r="28" fill="#9c7a5b"/>
+                            <path d="M145 165 Q185 155 225 165 L235 245 L135 245 Z" fill="#a83232"/>
+                        </svg>
+                        <button onclick="loadSampleArtwork('rabbit')" class="mt-2 bg-[#0078d7] hover:bg-[#0063b1] text-white px-4 py-1.5 rounded text-xs font-medium transition">
+                            Abrir esta arte vetorial no Editor
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- EDITOR DE DOCUMENTO -->
+            <div id="document-editor" class="hidden flex-1 flex flex-col overflow-hidden">
+                <div class="flex">
+                    <div class="w-[20px] h-[20px] bg-[#2b2b2b] border-r border-b border-[#1f1f1f] flex items-center justify-center text-[9px] text-gray-400">+</div>
+                    <canvas id="ruler-top" class="ruler-h flex-1"></canvas>
+                </div>
+
+                <div class="flex flex-1 overflow-hidden relative">
+                    <canvas id="ruler-left" class="ruler-v h-full"></canvas>
+
+                    <div id="workspace" class="workspace-area flex items-center justify-center">
+                        <svg id="corel-svg" class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <filter id="drop-shadow" x="-20%" y="-20%" width="150%" height="150%">
+                                    <feGaussianBlur in="SourceAlpha" stdDeviation="4"/>
+                                    <feOffset dx="4" dy="5" result="offsetblur"/>
+                                    <feComponentTransfer><feFuncA type="linear" slope="0.45"/></feComponentTransfer>
+                                    <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+                                </filter>
+                                <pattern id="doc-grid" width="10" height="10" patternUnits="userSpaceOnUse">
+                                    <path d="M 10 0 L 0 0 0 10" fill="none" stroke="#cccccc" stroke-width="0.3"/>
+                                </pattern>
+                            </defs>
+
+                            <g id="viewport-group">
+                                <rect id="page-shadow" x="2" y="2" width="210" height="297" fill="#2c2c2c" opacity="0.65"/>
+                                <rect id="page-sheet" x="0" y="0" width="210" height="297" fill="#ffffff" stroke="#111111" stroke-width="0.4"/>
+                                <rect id="page-grid-overlay" x="0" y="0" width="210" height="297" fill="url(#doc-grid)" class="hidden pointer-events-none"/>
+                                <g id="objects-layer"></g>
+                                <g id="preview-layer" class="pointer-events-none"></g>
+                                <g id="selection-layer"></g>
+                            </g>
+                        </svg>
+
+                        <input type="text" id="inline-text-editor" class="hidden absolute bg-white/95 text-black border border-[#0078d7] px-1 outline-none shadow-lg" style="font-size: 16px;">
+                    </div>
+                </div>
+
+                <div class="h-[22px] bg-[#2b2b2b] border-t border-[#1e1e1e] flex items-center justify-between px-2 text-[11px]">
+                    <div class="flex items-center gap-1">
+                        <button class="hover:text-white text-gray-400 px-1" onclick="addPage()"><i class="fa-solid fa-file-circle-plus text-[#69be28]"></i></button>
+                        <button class="hover:text-white text-gray-400 px-1" onclick="prevPage()"><i class="fa-solid fa-caret-left"></i></button>
+                        <span id="page-counter" class="text-gray-300 px-1">1 de 1</span>
+                        <button class="hover:text-white text-gray-400 px-1" onclick="nextPage()"><i class="fa-solid fa-caret-right"></i></button>
+                        <div id="page-tabs-list" class="flex items-center ml-2 gap-1">
+                            <span class="bg-[#454545] text-white px-2 py-0.5 rounded-t text-[10px] border-t border-[#0078d7]">Página 1</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- DOCKERS -->
+        <div class="docker-panel hidden md:flex" id="docker-panel">
+            <div class="h-6 bg-[#292929] border-b border-[#1d1d1d] flex items-center justify-between px-2 text-xs font-medium">
+                <span id="docker-title">Alinhar e distribuir</span>
+                <button class="text-gray-400 hover:text-white" onclick="toggleDockerPanel()">×</button>
+            </div>
+
+            <div id="docker-content-align" class="p-3 space-y-4 overflow-y-auto flex-1">
+                <div>
+                    <div class="text-[11px] text-gray-300 mb-2 font-semibold">Alinhar</div>
+                    <div class="grid grid-cols-4 gap-1.5">
+                        <button class="corel-btn !min-w-0 !p-1.5" title="Esquerda" onclick="alignObjects('left')"><i class="fa-solid fa-align-left"></i></button>
+                        <button class="corel-btn !min-w-0 !p-1.5" title="Centro" onclick="alignObjects('centerH')"><i class="fa-solid fa-align-center"></i></button>
+                        <button class="corel-btn !min-w-0 !p-1.5" title="Direita" onclick="alignObjects('right')"><i class="fa-solid fa-align-right"></i></button>
+                        <button class="corel-btn !min-w-0 !p-1.5" title="Página" onclick="alignObjects('pageCenter')">P</button>
+                    </div>
+                </div>
+
+                <div class="border-t border-[#454545] pt-3">
+                    <div class="text-[11px] text-gray-300 mb-2 font-semibold">Transformar</div>
+                    <div class="space-y-2 text-[11px]">
+                        <div class="flex items-center justify-between"><span>X:</span><input type="number" id="docker-x" class="corel-input w-24 text-right" onchange="updateSelectedFromDocker()"></div>
+                        <div class="flex items-center justify-between"><span>Y:</span><input type="number" id="docker-y" class="corel-input w-24 text-right" onchange="updateSelectedFromDocker()"></div>
+                        <div class="flex items-center justify-between"><span>L:</span><input type="number" id="docker-w" class="corel-input w-24 text-right" onchange="updateSelectedFromDocker()"></div>
+                        <div class="flex items-center justify-between"><span>A:</span><input type="number" id="docker-h" class="corel-input w-24 text-right" onchange="updateSelectedFromDocker()"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="docker-content-objects" class="hidden p-2 space-y-2 overflow-y-auto flex-1">
+                <div class="flex items-center justify-between bg-[#2a2a2a] p-1.5 rounded text-xs">
+                    <span><i class="fa-solid fa-layer-group text-[#69be28] mr-1"></i> Objetos</span>
+                    <span class="text-[10px] text-gray-400" id="layer-count">0 objetos</span>
+                </div>
+                <div class="pl-2 space-y-1" id="object-manager-list"></div>
+            </div>
+
+            <div id="docker-content-props" class="hidden p-3 space-y-3 overflow-y-auto flex-1 text-[11px]">
+                <div>
+                    <div class="font-semibold text-gray-300 mb-1.5">Preenchimento</div>
+                    <input type="color" id="prop-fill-color" class="w-8 h-6 bg-transparent border-0 cursor-pointer" value="#0099ff" onchange="applyFillColor(this.value)">
+                </div>
+            </div>
+        </div>
+
+        <div class="docker-tabs-vertical hidden sm:flex">
+            <div class="docker-vtab" id="vtab-props" onclick="switchDocker('props')"><i class="fa-solid fa-sliders text-[10px]"></i> Propriedades</div>
+            <div class="docker-vtab" id="vtab-objects" onclick="switchDocker('objects')"><i class="fa-solid fa-layer-group text-[10px]"></i> Gerenciador</div>
+            <div class="docker-vtab active" id="vtab-align" onclick="switchDocker('align')"><i class="fa-solid fa-align-left text-[10px]"></i> Alinhar</div>
+        </div>
+
+        <!-- PALETA CMYK -->
+        <div class="color-palette-bar" id="cmyk-palette"></div>
+    </div>
+
+    <!-- STATUS BAR -->
+    <div class="h-[22px] bg-[#2b2b2b] border-t border-[#1a1a1a] flex items-center justify-between px-2 text-[11px] text-gray-300 relative">
+        <!-- Botão Azul Arredondado posicionado em cima das coordenadas -->
+        <a href="https://6shescx.my.canva.site/shescx6" target="_blank" rel="noopener noreferrer" 
+           class="absolute -top-7 left-1 w-16 h-5 bg-[#001f4d] border border-[#004080] rounded-full cursor-pointer hover:bg-[#002666] shadow-md z-50 flex items-center justify-center transition"
+           title="Abrir site ShesCx">
+        </a>
+        <div class="flex items-center gap-4">
+            <span id="status-coords" class="font-mono text-[11px]">( 0,000 ; 0,000 )</span>
+            <span class="text-gray-500">|</span>
+            <span id="status-info">Tela de boas-vindas — Clique em "Novo documento" para começar.</span>
+        </div>
+        <div class="flex items-center gap-3">
+            <div class="flex items-center gap-1.5">
+                <div id="status-fill-box" class="w-3.5 h-3.5 border border-gray-400 bg-white flex items-center justify-center"><span class="text-red-500 font-bold text-[10px]">×</span></div>
+                <span id="status-fill-text">Nenhum</span>
+            </div>
+            <span class="text-gray-600">|</span>
+            <div class="flex items-center gap-1.5">
+                <div id="status-stroke-box" class="w-3.5 h-3.5 border border-gray-400 bg-black"></div>
+                <span id="status-stroke-text">C:0 M:0 Y:0 K:100  0,2 mm</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL NOVO DOCUMENTO -->
+    <div id="new-doc-modal" class="corel-modal-overlay hidden">
+        <div class="corel-modal">
+            <div class="flex items-center justify-between px-4 py-2.5 bg-[#323232] border-b border-[#222]">
+                <span class="text-[13px] text-white">Criar um novo documento</span>
+                <button class="text-gray-400 hover:text-white" onclick="closeNewDocModal()">×</button>
+            </div>
+            <div class="p-5 space-y-2.5 text-[12px]">
+                <div class="flex items-center">
+                    <label class="w-40 text-right pr-3 text-gray-200">Nome:</label>
+                    <input type="text" id="new-doc-name" value="Sem título-1" class="corel-input flex-1 !border-[#0078d7]">
+                </div>
+                <div class="flex items-center gap-2">
+                    <label class="w-40 text-right pr-3 text-gray-200">Largura:</label>
+                    <input type="number" id="new-doc-width" value="210" step="0.1" class="corel-input w-24">
+                </div>
+                <div class="flex items-center gap-2">
+                    <label class="w-40 text-right pr-3 text-gray-200">Altura:</label>
+                    <input type="number" id="new-doc-height" value="297" step="0.1" class="corel-input w-24">
+                </div>
+                <div class="flex items-center">
+                    <label class="w-40 text-right pr-3 text-gray-200">Número de páginas:</label>
+                    <input type="number" id="new-doc-pages" value="1" min="1" max="20" class="corel-input w-16">
+                </div>
+            </div>
+            <div class="flex items-center justify-end gap-2 px-4 py-3 bg-[#323232] border-t border-[#222]">
+                <button class="corel-btn primary" onclick="confirmCreateNewDocument()">OK</button>
+                <button class="corel-btn" onclick="closeNewDocModal()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL IMPRIMIR -->
+    <div id="print-modal" class="corel-modal-overlay hidden">
+        <div class="corel-modal !w-[480px]">
+            <div class="flex items-center justify-between px-4 py-2.5 bg-[#323232] border-b border-[#222]">
+                <span class="text-[13px] text-white">Imprimir</span>
+                <button class="text-gray-400 hover:text-white" onclick="closePrintModal()">×</button>
+            </div>
+            <div class="p-4 space-y-3 text-[12px]">
+                <div class="bg-[#2e2e2e] border border-[#222] p-3 space-y-2">
+                    <div class="text-[11px] font-semibold text-gray-300">Impressora</div>
+                    <div id="print-doc-summary" class="text-gray-300 text-[11px]">Sem título-1</div>
+                </div>
+                <div class="bg-[#2e2e2e] border border-[#222] p-3 flex items-center justify-between">
+                    <div>
+                        <div id="print-page-dims" class="text-[11px] text-gray-400">210,0 × 297,0 mm</div>
+                        <div id="print-obj-count" class="text-[11px] text-[#69be28]">0 objetos</div>
+                    </div>
+                    <div id="print-preview-box" class="w-24 h-28 bg-white border border-black flex items-center justify-center overflow-hidden"></div>
+                </div>
+            </div>
+            <div class="flex items-center justify-end gap-2 px-4 py-3 bg-[#323232] border-t border-[#222]">
+                <button class="corel-btn primary" onclick="executePrint()">Imprimir</button>
+                <button class="corel-btn" onclick="closePrintModal()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <input type="file" id="file-importer" accept=".svg,image/*" class="hidden" onchange="handleFileImport(event)">
+
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            const container = document.getElementById('cmyk-palette');
+            if (container) {
+                CMYK_SWATCHES.forEach(c => {
+                    const div = document.createElement('div');
+                    div.className = 'swatch flex items-center justify-center';
+                    div.title = `${c.name}\nClique esq.: Preenchimento | Clique dir.: Contorno`;
+                    if (c.hex === 'none') {
+                        div.style.background = '#ffffff';
+                        div.innerHTML = '<span class="text-red-600 font-bold text-[11px] leading-none">×</span>';
+                    } else {
+                        div.style.backgroundColor = c.hex;
+                    }
+                    div.addEventListener('click', () => applyFillColor(c.hex));
+                    div.addEventListener('contextmenu', (e) => {
+                        e.preventDefault();
+                        applyStrokeColor(c.hex);
+                    });
+                    container.appendChild(div);
+                });
+            }
+
+            const ws = document.getElementById('workspace');
+            const svgEl = document.getElementById('corel-svg');
+
+            if (ws && svgEl) {
+                ws.addEventListener('wheel', (e) => {
+                    e.preventDefault();
+                    const rect = svgEl.getBoundingClientRect();
+                    const mouseX = e.clientX - rect.left;
+                    const mouseY = e.clientY - rect.top;
+
+                    const factor = e.deltaY < 0 ? 1.15 : 0.87;
+                    const newZoom = Math.max(0.2, Math.min(15, state.zoom * factor));
+
+                    state.panX = mouseX - (mouseX - state.panX) * (newZoom / state.zoom);
+                    state.panY = mouseY - (mouseY - state.panY) * (newZoom / state.zoom);
+                    state.zoom = newZoom;
+
+                    updateViewportTransform();
+                    drawRulers();
+                    renderSelection();
+                }, { passive: false });
+
+                svgEl.addEventListener('mousedown', (e) => {
+                    if (e.button !== 0) return;
+                    const pt = clientToDocCoords(e.clientX, e.clientY);
+
+                    if (state.tool === 'pick' || state.tool === 'shape') {
+                        const handle = e.target.getAttribute('data-handle');
+                        if (handle && state.selectedId) {
+                            state.isResizing = true;
+                            state.resizeHandle = handle;
+                            state.dragStart = pt;
+                            state.origBounds = { ...getObjectBBox(getSelectedObject()) };
+                            return;
+                        }
+
+                        const objId = findObjectIdFromTarget(e.target);
+                        if (objId) {
+                            state.selectedId = objId;
+                            state.isDragging = true;
+                            state.dragStart = pt;
+                            state.origBounds = { ...getObjectBBox(getSelectedObject()) };
+                            renderAll();
+                            updatePropertyBar();
+                            updateDockers();
+                            return;
+                        } else {
+                            state.selectedId = null;
+                            renderAll();
+                            updatePropertyBar();
+                            updateDockers();
+                            return;
+                        }
+                    }
+
+                    if (['rect', 'ellipse', 'polygon', 'star', 'freehand'].includes(state.tool)) {
+                        state.isDrawing = true;
+                        state.dragStart = pt;
+                        const id = 'obj_' + Date.now();
+                        state.currentShape = {
+                            id,
+                            type: state.tool,
+                            x: pt.x,
+                            y: pt.y,
+                            w: 0,
+                            h: 0,
+                            points: state.tool === 'freehand' ? [{ x: pt.x, y: pt.y }] : [],
+                            fill: state.defaultFill,
+                            stroke: state.defaultStroke,
+                            strokeWidth: state.defaultStrokeWidth,
+                            opacity: 1,
+                            rotation: 0,
+                            shadow: false,
+                            rx: 0
+                        };
+                    }
+                });
+
+                window.addEventListener('mousemove', (e) => {
+                    if (!state.hasDocument || state.activeTab !== 'doc1') return;
+                    const pt = clientToDocCoords(e.clientX, e.clientY);
+                    const coords = document.getElementById('status-coords');
+                    if (coords) coords.textContent = `( ${pt.x.toFixed(3)} ; ${pt.y.toFixed(3)} )`;
+
+                    if (state.isDragging && state.selectedId) {
+                        const sel = getSelectedObject();
+                        if (!sel) return;
+                        const dx = pt.x - state.dragStart.x;
+                        const dy = pt.y - state.dragStart.y;
+                        moveObjectTo(sel, state.origBounds.x + dx, state.origBounds.y + dy);
+                        renderAll();
+                        updatePropertyBar();
+                        updateDockers();
+                        return;
+                    }
+
+                    if (state.isResizing && state.selectedId) {
+                        const sel = getSelectedObject();
+                        if (!sel) return;
+                        resizeObjectByHandle(sel, state.resizeHandle, pt, state.origBounds);
+                        renderAll();
+                        updatePropertyBar();
+                        updateDockers();
+                        return;
+                    }
+
+                    if (state.isDrawing && state.currentShape) {
+                        const s = state.currentShape;
+                        if (s.type === 'freehand') {
+                            s.points.push({ x: pt.x, y: pt.y });
+                            const xs = s.points.map(p => p.x), ys = s.points.map(p => p.y);
+                            s.x = Math.min(...xs);
+                            s.y = Math.min(...ys);
+                            s.w = Math.max(1, Math.max(...xs) - s.x);
+                            s.h = Math.max(1, Math.max(...ys) - s.y);
+                        } else {
+                            s.x = Math.min(state.dragStart.x, pt.x);
+                            s.y = Math.min(state.dragStart.y, pt.y);
+                            s.w = Math.abs(pt.x - state.dragStart.x);
+                            s.h = Math.abs(pt.y - state.dragStart.y);
+                        }
+                        const previewLayer = document.getElementById('preview-layer');
+                        if (previewLayer) {
+                            previewLayer.innerHTML = '';
+                            previewLayer.appendChild(createSVGElementForObject(s));
+                        }
+                    }
+                });
+
+                window.addEventListener('mouseup', () => {
+                    if (state.isDragging || state.isResizing) {
+                        state.isDragging = false;
+                        state.isResizing = false;
+                        saveHistory();
+                    }
+
+                    if (state.isDrawing && state.currentShape) {
+                        state.isDrawing = false;
+                        const previewLayer = document.getElementById('preview-layer');
+                        if (previewLayer) previewLayer.innerHTML = '';
+                        if (state.currentShape.w > 1 || state.currentShape.h > 1 || state.currentShape.points.length > 2) {
+                            getObjects().push(state.currentShape);
+                            state.selectedId = state.currentShape.id;
+                            saveHistory();
+                        }
+                        state.currentShape = null;
+                        renderAll();
+                        updatePropertyBar();
+                        updateDockers();
+                    }
+                });
+            }
+
+            switchTab('welcome');
+            updatePropertyBar();
+
+            window.addEventListener('resize', () => {
+                if (state.hasDocument && state.activeTab === 'doc1') {
+                    drawRulers();
+                }
+            });
+        });
+
+        function findObjectIdFromTarget(el) {
+            const svgEl = document.getElementById('corel-svg');
+            let curr = el;
+            while (curr && curr !== svgEl) {
+                if (curr.dataset && curr.dataset.objId) {
+                    return curr.dataset.objId;
+                }
+                curr = curr.parentNode;
+            }
+            return null;
+        }
+
+        window.addEventListener('paste', (e) => {
+            if (!state.hasDocument || state.activeTab === 'welcome') return;
+            const items = e.clipboardData && e.clipboardData.items;
+            if (!items) return;
+            for (let i = 0; i < items.length; i++) {
+                if (items[i].type.indexOf('image') !== -1) {
+                    const blob = items[i].getAsFile();
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        const imgObj = {
+                            id: 'obj_' + Date.now(),
+                            type: 'image',
+                            x: 25,
+                            y: 25,
+                            w: 95,
+                            h: 95,
+                            href: event.target.result,
+                            opacity: 1,
+                            rotation: 0
+                        };
+                        getObjects().push(imgObj);
+                        state.selectedId = imgObj.id;
+                        saveHistory();
+                        renderAll();
+                        updatePropertyBar();
+                        updateDockers();
+                    };
+                    reader.readAsDataURL(blob);
+                    e.preventDefault();
+                    break;
+                }
+            }
+        });
+
+        window.addEventListener('keydown', (e) => {
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
+
+            if (e.key === 'Delete' || e.key === 'Backspace') deleteSelected();
+            if (e.key === ' ') { e.preventDefault(); selectTool('pick'); }
+            if (e.key === 'F6') { e.preventDefault(); selectTool('rect'); }
+            if (e.key === 'F7') { e.preventDefault(); selectTool('ellipse'); }
+            if (e.key === 'F8') { e.preventDefault(); selectTool('text'); }
+            if (e.key.toLowerCase() === 'y') selectTool('polygon');
+
+            if (e.ctrlKey && e.key.toLowerCase() === 'n') { e.preventDefault(); openNewDocModal(); }
+            if (e.ctrlKey && e.key.toLowerCase() === 'p') { e.preventDefault(); openPrintModal(); }
+            if (e.ctrlKey && e.key.toLowerCase() === 'z') { e.preventDefault(); undo(); }
+            if (e.ctrlKey && e.key.toLowerCase() === 'd') { e.preventDefault(); duplicateSelected(); }
+            if (e.ctrlKey && e.key.toLowerCase() === 'c') { e.preventDefault(); copySelected(); }
+            if (e.ctrlKey && e.key.toLowerCase() === 'v') { e.preventDefault(); pasteClipboard(); }
+            if (e.ctrlKey && e.key.toLowerCase() === 'a') { e.preventDefault(); selectAll(); }
+        });
+    </script>
+</body>
+</html>
