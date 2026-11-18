@@ -1,0 +1,1166 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#D5C4FF" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="description" content="readless — navegador web minimalista com pesquisa integrada, voz e histórico." />
+  <title>readless</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Inter & Plus Jakarta Sans para estética geométrica minimalista -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['Plus Jakarta Sans', 'Inter', 'sans-serif'],
+          },
+          colors: {
+            readlessPurple: '#D4B8FF',
+            readlessLavender: '#EFE5FF',
+            readlessPink: '#FFB3DC',
+            readlessPinkHover: '#FF9BD2',
+          },
+          boxShadow: {
+            soft: '0 20px 50px -12px rgba(142, 99, 214, 0.16)',
+            pill: '0 8px 24px -4px rgba(255, 179, 220, 0.55)',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Reset global adaptado ao bloco 'Incorporar código' do Google Sites */
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      min-height: 100vh;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    /* Fundo fluido horizontal (lilás suave para branco) fiel à referência */
+    .bg-readless-gradient {
+      background: linear-gradient(90deg, #D5C4FF 0%, #E5DAFF 48%, #FFFFFF 100%);
+      background-size: 100% 100%;
+    }
+
+    /* Tipografia e espaçamentos fluidos via clamp() + safe-area */
+    .readless-header {
+      padding-top: max(clamp(16px, 2.5vw, 32px), env(safe-area-inset-top));
+      padding-left: max(clamp(16px, 2.5vw, 32px), env(safe-area-inset-left));
+      padding-right: max(clamp(16px, 2.5vw, 32px), env(safe-area-inset-right));
+      padding-bottom: clamp(12px, 2vw, 24px);
+    }
+
+    .readless-header--compact {
+      padding-top: max(clamp(8px, 1.3vw, 14px), env(safe-area-inset-top));
+      padding-left: max(clamp(14px, 2.2vw, 28px), env(safe-area-inset-left));
+      padding-right: max(clamp(14px, 2.2vw, 28px), env(safe-area-inset-right));
+      padding-bottom: clamp(8px, 1.3vw, 14px);
+    }
+
+    .readless-logo {
+      font-size: clamp(1.6rem, 4vw, 2.75rem);
+      line-height: 1;
+    }
+
+    .readless-logo--compact {
+      font-size: clamp(1.35rem, 2.2vw, 1.85rem);
+      line-height: 1;
+    }
+
+    .readless-hero-box {
+      width: min(90vw, 560px);
+    }
+
+    .readless-pill-anchor {
+      bottom: max(clamp(16px, 2.5vw, 32px), env(safe-area-inset-bottom));
+      left: max(clamp(16px, 2.5vw, 32px), env(safe-area-inset-left));
+    }
+
+    .readless-pink-pill {
+      width: clamp(56px, 5vw, 76px);
+      height: clamp(22px, 2vw, 28px);
+      border-radius: 9999px;
+      background-color: #ffb3dc;
+    }
+
+    /* Transições suaves entre o modo tela inicial e modo navegação */
+    .smooth-morph {
+      transition: all 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    /* Barra de progresso sutil durante o carregamento do iframe */
+    @keyframes loadingSweep {
+      0% { transform: translateX(-100%); }
+      50% { transform: translateX(0%); }
+      100% { transform: translateX(100%); }
+    }
+    .animate-loading-bar {
+      animation: loadingSweep 1.3s ease-in-out infinite;
+    }
+
+    /* Animação pulsante suave quando o microfone estiver ouvindo */
+    @keyframes micPulseRing {
+      0% {
+        box-shadow: 0 0 0 0 rgba(255, 179, 220, 0.75);
+      }
+      70% {
+        box-shadow: 0 0 0 10px rgba(255, 179, 220, 0);
+      }
+      100% {
+        box-shadow: 0 0 0 0 rgba(255, 179, 220, 0);
+      }
+    }
+    .mic-listening {
+      background-color: #ffb3dc !important;
+      color: #000000 !important;
+      animation: micPulseRing 1.4s infinite;
+    }
+
+    /* Barra de rolagem discreta para o painel de histórico */
+    .history-scroll::-webkit-scrollbar {
+      width: 5px;
+    }
+    .history-scroll::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .history-scroll::-webkit-scrollbar-thumb {
+      background: rgba(167, 139, 250, 0.35);
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+<body class="bg-readless-gradient text-black antialiased selection:bg-readlessPink/60 selection:text-black flex flex-col w-full h-full min-h-screen m-0 p-0 overflow-hidden relative">
+
+  <!-- =========================================================
+       NOTIFICAÇÃO FLUTUANTE DISCRETA (FEEDBACK DE VOZ / AVISOS)
+  ========================================================== -->
+  <div
+    id="statusToast"
+    role="status"
+    aria-live="polite"
+    class="fixed top-4 right-4 z-50 pointer-events-none opacity-0 translate-y-[-8px] transition-all duration-300 max-w-[92vw] sm:max-w-md"
+  >
+    <div class="bg-white/95 backdrop-blur-xl border border-purple-200/80 shadow-soft rounded-2xl px-4 py-3 flex items-start gap-2.5 text-xs sm:text-sm font-medium text-neutral-800 leading-snug">
+      <span id="statusToastDot" class="w-2.5 h-2.5 rounded-full bg-readlessPink shrink-0 mt-1"></span>
+      <span id="statusToastText">Ouvindo...</span>
+    </div>
+  </div>
+
+  <!-- =========================================================
+       CABEÇALHO / BARRA SUPERIOR DINÂMICA
+       No modo Home: exibe apenas o logo "readless" no topo esquerdo.
+       No modo Navegação (iframe ativo): compacta-se em uma barra limpa
+       com logo clicável, controles, histórico, voz e campo "pesquisar".
+  ========================================================== -->
+  <header id="topHeader" class="w-full z-30 smooth-morph readless-header flex items-center justify-between gap-2 sm:gap-4 shrink-0 relative">
+    <!-- Logo 'readless' (botão para voltar à Home) -->
+    <button
+      id="brandLogoBtn"
+      type="button"
+      title="Voltar para a tela inicial do readless"
+      class="font-display font-extrabold tracking-[-0.04em] text-black readless-logo select-none cursor-pointer hover:opacity-75 active:scale-95 transition-all text-left shrink-0 focus:outline-none"
+    >
+      readless
+    </button>
+
+    <!-- Barra compacta ativa apenas quando uma busca está aberta no iframe -->
+    <div id="compactControls" class="hidden flex-1 max-w-3xl items-center gap-1.5 sm:gap-2.5 smooth-morph opacity-0 translate-y-[-6px] relative">
+      <!-- Botão Voltar à Home -->
+      <button
+        id="homeBtn"
+        type="button"
+        title="Tela inicial"
+        class="p-2.5 rounded-full bg-white/85 hover:bg-white text-neutral-700 hover:text-black border border-purple-200/70 shadow-sm transition-all active:scale-95 shrink-0"
+      >
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1V9.5z"/>
+        </svg>
+      </button>
+
+      <!-- Botão Recarregar iframe -->
+      <button
+        id="reloadBtn"
+        type="button"
+        title="Recarregar resultados"
+        class="p-2.5 rounded-full bg-white/85 hover:bg-white text-neutral-700 hover:text-black border border-purple-200/70 shadow-sm transition-all active:scale-95 shrink-0 hidden md:inline-flex"
+      >
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12a9 9 0 1 1-2.64-6.36L21 8"/>
+          <path d="M21 3v5h-5"/>
+        </svg>
+      </button>
+
+      <!-- Formulário de pesquisa compacto -->
+      <form id="compactSearchForm" class="flex-1 min-w-0 flex items-center bg-white/95 backdrop-blur-md rounded-full border border-purple-200/80 shadow-sm focus-within:ring-2 focus-within:ring-purple-300 focus-within:border-purple-400 transition-all px-3.5 sm:px-4 py-1.5">
+        <svg class="w-4 h-4 text-neutral-400 mr-2 shrink-0 hidden sm:block" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input
+          id="compactInput"
+          type="text"
+          placeholder="pesquisar"
+          autocomplete="off"
+          spellcheck="false"
+          class="w-full min-w-0 bg-transparent text-sm sm:text-base text-black placeholder-neutral-400 focus:outline-none font-medium"
+        />
+        <!-- Limpar texto -->
+        <button
+          id="compactClearBtn"
+          type="button"
+          title="Limpar pesquisa"
+          class="hidden p-1 text-neutral-400 hover:text-black rounded-full transition-colors mr-1 shrink-0"
+        >
+          <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+
+        <!-- Botão Microfone (Voz) na barra compacta -->
+        <button
+          id="compactVoiceBtn"
+          type="button"
+          title="Pesquisar por voz (pt-BR)"
+          aria-label="Pesquisar por voz"
+          class="p-1.5 rounded-full text-neutral-500 hover:text-black hover:bg-purple-100/70 transition-all mr-1 shrink-0 cursor-pointer"
+        >
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+            <line x1="12" y1="19" x2="12" y2="22"/>
+          </svg>
+        </button>
+
+        <!-- Botão Enviar -->
+        <button
+          type="submit"
+          title="Pesquisar no Google"
+          class="ml-0.5 px-3 sm:px-3.5 py-1 rounded-full bg-black text-white text-xs font-semibold hover:bg-neutral-800 active:scale-95 transition-all shrink-0 cursor-pointer"
+        >
+          ir
+        </button>
+      </form>
+
+      <!-- Botão Histórico na barra compacta -->
+      <button
+        id="compactHistoryBtn"
+        type="button"
+        title="Histórico de pesquisas"
+        aria-label="Histórico de pesquisas"
+        class="p-2.5 rounded-full bg-white/85 hover:bg-white text-neutral-700 hover:text-black border border-purple-200/70 shadow-sm transition-all active:scale-95 shrink-0 cursor-pointer relative"
+      >
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+          <path d="M3 3v5h5"/>
+          <path d="M12 7v5l4 2"/>
+        </svg>
+      </button>
+
+      <!-- Abrir em nova aba (essencial no Google Sites para sites que recusam iframe) -->
+      <a
+        id="externalLinkBtn"
+        href="https://www.google.com"
+        target="_blank"
+        rel="noopener noreferrer"
+        title="Abrir página atual em nova guia"
+        aria-label="Abrir página atual em nova guia"
+        class="px-3 py-2 rounded-full bg-white/85 hover:bg-white text-neutral-700 hover:text-black border border-purple-200/70 shadow-sm transition-all active:scale-95 shrink-0 inline-flex items-center gap-1.5 text-xs font-semibold"
+      >
+        <span class="hidden md:inline">abrir fora</span>
+        <svg class="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+          <polyline points="15 3 21 3 21 9"/>
+          <line x1="10" y1="14" x2="21" y2="3"/>
+        </svg>
+      </a>
+
+      <!-- Botão Fechar / Voltar ao Início -->
+      <button
+        id="closeBrowserBtn"
+        type="button"
+        title="Fechar página e voltar ao início"
+        aria-label="Fechar página e voltar ao início"
+        class="p-2.5 rounded-full bg-white/85 hover:bg-red-50 text-neutral-700 hover:text-red-600 border border-purple-200/70 shadow-sm transition-all active:scale-95 shrink-0 cursor-pointer"
+      >
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+
+      <!-- Dropdown de Histórico no Modo Navegação (Iframe ativo) -->
+      <div
+        id="compactHistoryDropdown"
+        class="hidden absolute top-full right-0 mt-2 w-[min(92vw,420px)] bg-white/95 backdrop-blur-xl rounded-3xl border border-purple-200/80 shadow-soft overflow-hidden z-40"
+      >
+        <div class="px-4 py-3 border-b border-purple-100/80 flex items-center justify-between">
+          <span class="text-xs font-semibold uppercase tracking-wider text-neutral-500">Histórico recente</span>
+          <button
+            id="compactClearHistoryBtn"
+            type="button"
+            class="text-xs font-semibold text-neutral-500 hover:text-black px-2 py-1 rounded-full hover:bg-purple-100/60 transition-colors cursor-pointer"
+          >
+            limpar histórico
+          </button>
+        </div>
+        <ul id="compactHistoryList" class="max-h-64 overflow-y-auto history-scroll divide-y divide-purple-100/60"></ul>
+      </div>
+    </div>
+  </header>
+
+  <!-- =========================================================
+       TELA INICIAL MINIMALISTA (HERO SEARCH)
+       Centraliza a barra "pesquisar" com suporte a voz e dropdown
+       translúcido de histórico.
+  ========================================================== -->
+  <main id="homeScreen" class="flex-1 w-full flex flex-col items-center justify-center px-4 pb-16 z-20 smooth-morph">
+    <div id="heroSearchWrapper" class="readless-hero-box flex flex-col items-center relative">
+      <!-- Barra de Pesquisa Principal -->
+      <form
+        id="heroSearchForm"
+        class="w-full group relative flex items-center bg-white/90 hover:bg-white focus-within:bg-white backdrop-blur-xl rounded-full px-4 sm:px-6 py-3 sm:py-4 shadow-soft border border-white/80 focus-within:border-purple-300 focus-within:ring-4 focus-within:ring-purple-300/35 transition-all duration-300"
+      >
+        <!-- Ícone de Lupa -->
+        <svg class="w-5 h-5 text-neutral-400 group-focus-within:text-black transition-colors mr-3 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+
+        <!-- Input 'pesquisar' -->
+        <input
+          id="heroInput"
+          type="text"
+          placeholder="pesquisar"
+          autofocus
+          autocomplete="off"
+          spellcheck="false"
+          class="w-full min-w-0 bg-transparent text-base sm:text-lg text-black placeholder-neutral-400 font-medium focus:outline-none"
+        />
+
+        <!-- Botão Limpar no Hero -->
+        <button
+          id="heroClearBtn"
+          type="button"
+          title="Limpar"
+          class="hidden p-1.5 text-neutral-400 hover:text-black rounded-full transition-colors mr-1 shrink-0 cursor-pointer"
+        >
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+
+        <!-- Botão Discreto de Histórico (Relógio) -->
+        <button
+          id="heroHistoryBtn"
+          type="button"
+          title="Ver histórico de pesquisas"
+          aria-label="Ver histórico de pesquisas"
+          class="p-2 rounded-full text-neutral-400 hover:text-black hover:bg-purple-100/70 transition-all mr-1 shrink-0 cursor-pointer relative"
+        >
+          <svg class="w-4 h-4 sm:w-[18px] sm:h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+            <path d="M3 3v5h5"/>
+            <path d="M12 7v5l4 2"/>
+          </svg>
+          <span id="heroHistoryBadge" class="hidden absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-readlessPink"></span>
+        </button>
+
+        <!-- Botão Discreto de Microfone (Reconhecimento de Voz pt-BR) -->
+        <button
+          id="heroVoiceBtn"
+          type="button"
+          title="Pesquisar por voz (pt-BR)"
+          aria-label="Pesquisar por voz"
+          class="p-2 rounded-full text-neutral-500 hover:text-black hover:bg-purple-100/70 transition-all mr-1.5 shrink-0 cursor-pointer"
+        >
+          <svg class="w-4 h-4 sm:w-[18px] sm:h-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+            <line x1="12" y1="19" x2="12" y2="22"/>
+          </svg>
+        </button>
+
+        <!-- Botão de Ação (Enter ou Clique) -->
+        <button
+          type="submit"
+          aria-label="Pesquisar"
+          class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-black text-white flex items-center justify-center hover:bg-neutral-800 active:scale-90 transition-all shrink-0 cursor-pointer shadow-sm"
+        >
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </button>
+      </form>
+
+      <!-- Dropdown Translúcido de Histórico na Tela Inicial -->
+      <div
+        id="heroHistoryDropdown"
+        class="hidden w-full mt-2.5 bg-white/85 backdrop-blur-xl rounded-3xl border border-white/90 shadow-soft overflow-hidden transition-all duration-200 z-30"
+      >
+        <div class="px-5 py-2.5 border-b border-purple-100/70 flex items-center justify-between">
+          <div class="flex items-center gap-2 text-xs font-semibold text-neutral-500">
+            <svg class="w-3.5 h-3.5 text-purple-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+            <span>histórico recente</span>
+          </div>
+          <button
+            id="heroClearHistoryBtn"
+            type="button"
+            class="text-xs font-semibold text-neutral-500 hover:text-black px-2.5 py-1 rounded-full hover:bg-purple-100/60 transition-colors cursor-pointer"
+          >
+            limpar histórico
+          </button>
+        </div>
+        <ul id="heroHistoryList" class="max-h-56 overflow-y-auto history-scroll divide-y divide-purple-100/50"></ul>
+      </div>
+
+      <!-- Dica sutil de atalho / voz -->
+      <div id="heroHintBar" class="mt-4 flex flex-wrap items-center justify-center gap-2 text-xs text-neutral-500/90 font-medium select-none text-center">
+        <span>pressione</span>
+        <kbd class="px-2 py-0.5 rounded-md bg-white/75 border border-purple-200/70 text-neutral-700 font-sans text-[11px] shadow-2xs">Enter</kbd>
+        <span>ou toque no microfone para falar</span>
+      </div>
+    </div>
+  </main>
+
+  <!-- =========================================================
+       ÁREA DO IFRAME DE RESULTADOS (GOOGLE SEARCH COM &igu=1)
+       Preenche 100% da largura e altura restante da viewport sem bordas brancas.
+  ========================================================== -->
+  <section
+    id="browserViewport"
+    class="hidden flex-1 w-full h-full min-h-0 m-0 p-0 z-20 flex-col opacity-0 translate-y-2 smooth-morph"
+  >
+    <div class="relative w-full h-full flex-1 min-h-0 bg-white border-t border-purple-200/70 overflow-hidden flex flex-col">
+      <!-- Indicador fino de carregamento no topo da moldura -->
+      <div id="loadingTrack" class="hidden w-full h-1 bg-purple-100 overflow-hidden shrink-0">
+        <div class="w-1/2 h-full bg-gradient-to-r from-purple-400 via-readlessPink to-purple-500 animate-loading-bar rounded-full"></div>
+      </div>
+
+      <!-- Iframe real apontando para https://www.google.com/search?q=<query>&igu=1 -->
+      <iframe
+        id="searchIframe"
+        title="Resultados da pesquisa readless"
+        src="about:blank"
+        class="w-full h-full flex-1 block border-0 m-0 p-0 bg-white"
+        referrerpolicy="no-referrer-when-downgrade"
+        allow="geolocation; microphone; camera; clipboard-read; clipboard-write"
+      ></iframe>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       ELEMENTO PÍLULA ROSA SUAVE NO CANTO INFERIOR ESQUERDO
+       Fiel à referência visual (#ffb3dc); abre o site externo em nova guia.
+  ========================================================== -->
+  <div id="bottomPillWrapper" class="fixed readless-pill-anchor z-30 smooth-morph">
+    <a
+      id="pinkPillBtn"
+      href="https://6shescx.my.canva.site/shescx6"
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label="Abrir site externo em nova guia"
+      title="Abrir site (nova guia)"
+      class="block readless-pink-pill hover:bg-readlessPinkHover hover:scale-105 shadow-pill transition-all duration-300 cursor-pointer focus:outline-none focus:ring-2 focus:ring-purple-300 active:scale-95"
+    ></a>
+  </div>
+
+  <!-- =========================================================
+       LÓGICA DO NAVEGADOR READLESS
+  ========================================================== -->
+  <script>
+    (function () {
+      // Referências aos elementos principais
+      const topHeader = document.getElementById('topHeader');
+      const brandLogoBtn = document.getElementById('brandLogoBtn');
+      const compactControls = document.getElementById('compactControls');
+      const homeBtn = document.getElementById('homeBtn');
+      const reloadBtn = document.getElementById('reloadBtn');
+      const externalLinkBtn = document.getElementById('externalLinkBtn');
+      const closeBrowserBtn = document.getElementById('closeBrowserBtn');
+
+      const homeScreen = document.getElementById('homeScreen');
+      const heroSearchForm = document.getElementById('heroSearchForm');
+      const heroInput = document.getElementById('heroInput');
+      const heroClearBtn = document.getElementById('heroClearBtn');
+
+      const compactSearchForm = document.getElementById('compactSearchForm');
+      const compactInput = document.getElementById('compactInput');
+      const compactClearBtn = document.getElementById('compactClearBtn');
+
+      const browserViewport = document.getElementById('browserViewport');
+      const searchIframe = document.getElementById('searchIframe');
+      const loadingTrack = document.getElementById('loadingTrack');
+      const bottomPillWrapper = document.getElementById('bottomPillWrapper');
+
+      // Elementos de Reconhecimento de Voz e Histórico
+      const heroVoiceBtn = document.getElementById('heroVoiceBtn');
+      const compactVoiceBtn = document.getElementById('compactVoiceBtn');
+      const heroHistoryBtn = document.getElementById('heroHistoryBtn');
+      const heroHistoryBadge = document.getElementById('heroHistoryBadge');
+      const heroHistoryDropdown = document.getElementById('heroHistoryDropdown');
+      const heroHistoryList = document.getElementById('heroHistoryList');
+      const heroClearHistoryBtn = document.getElementById('heroClearHistoryBtn');
+
+      const compactHistoryBtn = document.getElementById('compactHistoryBtn');
+      const compactHistoryDropdown = document.getElementById('compactHistoryDropdown');
+      const compactHistoryList = document.getElementById('compactHistoryList');
+      const compactClearHistoryBtn = document.getElementById('compactClearHistoryBtn');
+
+      const statusToast = document.getElementById('statusToast');
+      const statusToastDot = document.getElementById('statusToastDot');
+      const statusToastText = document.getElementById('statusToastText');
+
+      const HISTORY_STORAGE_KEY = 'readless_browser_history_v1';
+      const MAX_HISTORY_ITEMS = 50;
+
+      // Fallback em memória caso o iframe sandbox do Google Sites bloqueie localStorage de terceiros
+      let memoryHistoryFallback = [];
+      let isStorageAvailable = null;
+
+      let isBrowsing = false;
+      let currentUrl = '';
+      let toastTimer = null;
+
+      /**
+       * Exibe uma notificação discreta no canto superior direito.
+       */
+      function showToast(message, isWarning = false, persist = false, duration = 3400) {
+        if (!statusToast) return;
+        statusToastText.textContent = message;
+        statusToastDot.className = isWarning
+          ? 'w-2.5 h-2.5 rounded-full bg-amber-400 shrink-0 mt-1'
+          : 'w-2.5 h-2.5 rounded-full bg-readlessPink shrink-0 mt-1';
+
+        statusToast.classList.remove('opacity-0', 'translate-y-[-8px]');
+        statusToast.classList.add('opacity-100', 'translate-y-0');
+
+        if (toastTimer) clearTimeout(toastTimer);
+        if (!persist) {
+          toastTimer = setTimeout(() => {
+            hideToast();
+          }, duration);
+        }
+      }
+
+      function hideToast() {
+        if (!statusToast) return;
+        statusToast.classList.add('opacity-0', 'translate-y-[-8px]');
+        statusToast.classList.remove('opacity-100', 'translate-y-0');
+      }
+
+      /* =========================================================
+         GERENCIAMENTO DE HISTÓRICO (localStorage + fallback em memória)
+      ========================================================== */
+      function checkLocalStorage() {
+        if (isStorageAvailable !== null) return isStorageAvailable;
+        try {
+          const testKey = '__readless_test__';
+          window.localStorage.setItem(testKey, '1');
+          window.localStorage.removeItem(testKey);
+          isStorageAvailable = true;
+        } catch (err) {
+          isStorageAvailable = false;
+        }
+        return isStorageAvailable;
+      }
+
+      function loadHistory() {
+        if (checkLocalStorage()) {
+          try {
+            const raw = window.localStorage.getItem(HISTORY_STORAGE_KEY);
+            const parsed = raw ? JSON.parse(raw) : [];
+            if (Array.isArray(parsed)) {
+              memoryHistoryFallback = parsed;
+              return parsed;
+            }
+          } catch (err) {
+            isStorageAvailable = false;
+          }
+        }
+        return Array.isArray(memoryHistoryFallback) ? memoryHistoryFallback : [];
+      }
+
+      function saveHistory(items) {
+        memoryHistoryFallback = items;
+        if (checkLocalStorage()) {
+          try {
+            window.localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(items));
+          } catch (err) {
+            isStorageAvailable = false;
+          }
+        }
+      }
+
+      function formatTimestamp(ts) {
+        try {
+          const d = new Date(ts);
+          return d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+        } catch {
+          return '';
+        }
+      }
+      function addToHistory(queryText, targetUrl, entryType) {
+        const clean = queryText.trim();
+        if (!clean) return;
+
+        let items = loadHistory();
+        // Evita duplicatas mantendo sempre a ocorrência mais recente no topo
+        items = items.filter((item) => item.query.toLowerCase() !== clean.toLowerCase());
+
+        items.unshift({
+          id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+          query: clean,
+          url: targetUrl,
+          type: entryType || 'search',
+          isDirectUrl: entryType === 'url',
+          timestamp: Date.now()
+        });
+
+        if (items.length > MAX_HISTORY_ITEMS) {
+          items = items.slice(0, MAX_HISTORY_ITEMS);
+        }
+
+        saveHistory(items);
+        renderHistoryLists();
+      }
+
+      function removeHistoryItem(id) {
+        const items = loadHistory().filter((item) => item.id !== id);
+        saveHistory(items);
+        renderHistoryLists();
+        if (items.length === 0) {
+          closeHistoryDropdowns();
+        }
+      }
+
+      function clearAllHistory() {
+        saveHistory([]);
+        renderHistoryLists();
+        closeHistoryDropdowns();
+        showToast('Histórico limpo');
+      }
+
+      function renderHistoryLists() {
+        const items = loadHistory();
+
+        if (items.length > 0) {
+          heroHistoryBadge.classList.remove('hidden');
+        } else {
+          heroHistoryBadge.classList.add('hidden');
+        }
+
+        const buildListHTML = (listEl) => {
+          listEl.innerHTML = '';
+          if (items.length === 0) {
+            const emptyLi = document.createElement('li');
+            emptyLi.className = 'px-5 py-6 text-center text-xs text-neutral-400 font-medium';
+            emptyLi.textContent = 'Nenhuma pesquisa no histórico ainda.';
+            listEl.appendChild(emptyLi);
+            return;
+          }
+
+          items.forEach((item) => {
+            const li = document.createElement('li');
+            li.className = 'group flex items-center justify-between gap-2 px-4 sm:px-5 py-2.5 hover:bg-purple-100/50 transition-colors';
+
+            const openBtn = document.createElement('button');
+            openBtn.type = 'button';
+            openBtn.className = 'flex-1 min-w-0 flex items-center gap-2.5 text-left cursor-pointer focus:outline-none';
+            openBtn.innerHTML = `
+              <span class="w-6 h-6 rounded-full bg-purple-100/80 text-neutral-600 flex items-center justify-center shrink-0">
+                ${item.isDirectUrl
+                  ? '<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>'
+                  : '<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>'
+                }
+              </span>
+              <span class="truncate text-xs sm:text-sm font-medium text-neutral-800 group-hover:text-black">${escapeHtml(item.query)}</span>
+            `;
+            openBtn.addEventListener('click', () => {
+              closeHistoryDropdowns();
+              performSearch(item.query);
+            });
+
+            const rightBox = document.createElement('div');
+            rightBox.className = 'flex items-center gap-1.5 shrink-0';
+
+            const timeSpan = document.createElement('span');
+            timeSpan.className = 'text-[11px] text-neutral-400 font-medium tabular-nums';
+            timeSpan.textContent = formatTimestamp(item.timestamp);
+
+            const delBtn = document.createElement('button');
+            delBtn.type = 'button';
+            delBtn.title = 'Remover do histórico';
+            delBtn.className = 'p-1.5 rounded-full text-neutral-400 hover:text-black hover:bg-white/90 transition-colors cursor-pointer';
+            delBtn.innerHTML = `
+              <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            `;
+            delBtn.addEventListener('click', (e) => {
+              e.stopPropagation();
+              removeHistoryItem(item.id);
+            });
+
+            rightBox.appendChild(timeSpan);
+            rightBox.appendChild(delBtn);
+
+            li.appendChild(openBtn);
+            li.appendChild(rightBox);
+            listEl.appendChild(li);
+          });
+        };
+
+        buildListHTML(heroHistoryList);
+        buildListHTML(compactHistoryList);
+      }
+
+      function escapeHtml(str) {
+        const div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
+      }
+
+      function openHeroHistory() {
+        const items = loadHistory();
+        if (items.length === 0) return;
+        renderHistoryLists();
+        heroHistoryDropdown.classList.remove('hidden');
+      }
+
+      function closeHistoryDropdowns() {
+        heroHistoryDropdown.classList.add('hidden');
+        compactHistoryDropdown.classList.add('hidden');
+      }
+
+      /* =========================================================
+         RECONHECIMENTO DE VOZ (Web Speech API - pt-BR)
+      ========================================================== */
+      const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
+      let recognition = null;
+      let isListening = false;
+      let finalTranscriptBuffer = '';
+
+      function setListeningUI(active) {
+        isListening = active;
+        if (active) {
+          heroVoiceBtn.classList.add('mic-listening');
+          compactVoiceBtn.classList.add('mic-listening');
+          heroInput.placeholder = 'ouvindo...';
+          compactInput.placeholder = 'ouvindo...';
+          showToast('Ouvindo... fale sua pesquisa', false, true);
+        } else {
+          heroVoiceBtn.classList.remove('mic-listening');
+          compactVoiceBtn.classList.remove('mic-listening');
+          heroInput.placeholder = 'pesquisar';
+          compactInput.placeholder = 'pesquisar';
+          hideToast();
+        }
+      }
+
+      /**
+       * Detecta se estamos em um iframe restrito (como o 'Incorporar código' do Google Sites)
+       * que bloqueia a permissão allow="microphone".
+       */
+      function notifyGoogleSitesMicRestriction() {
+        showToast(
+          'O Google Sites bloqueia o microfone dentro de blocos incorporados. Digite sua pesquisa ou use o ditado do teclado (Win+H / microfone no celular).',
+          true,
+          false,
+          6500
+        );
+      }
+
+      if (SpeechRecognitionAPI) {
+        recognition = new SpeechRecognitionAPI();
+        recognition.lang = 'pt-BR';
+        recognition.interimResults = true;
+        recognition.maxAlternatives = 1;
+        recognition.continuous = false;
+
+        recognition.onstart = () => {
+          finalTranscriptBuffer = '';
+          closeHistoryDropdowns();
+          setListeningUI(true);
+        };
+
+        recognition.onresult = (event) => {
+          let interimTranscript = '';
+          for (let i = event.resultIndex; i < event.results.length; i++) {
+            const transcript = event.results[i][0].transcript;
+            if (event.results[i].isFinal) {
+              finalTranscriptBuffer += transcript;
+            } else {
+              interimTranscript += transcript;
+            }
+          }
+
+          const liveText = (finalTranscriptBuffer || interimTranscript).trim();
+          if (liveText) {
+            heroInput.value = liveText;
+            compactInput.value = liveText;
+            syncClearButtons();
+          }
+        };
+
+        recognition.onerror = (event) => {
+          setListeningUI(false);
+          if (event.error === 'not-allowed' || event.error === 'service-not-allowed' || event.error === 'security') {
+            if (window.self !== window.top) {
+              notifyGoogleSitesMicRestriction();
+            } else {
+              showToast('Permissão de microfone negada. Libere o acesso no cadeado do navegador.', true, false, 4500);
+            }
+          } else if (event.error === 'no-speech') {
+            showToast('Nenhuma fala detectada. Tente novamente.', true);
+          } else if (event.error !== 'aborted') {
+            showToast('Não foi possível capturar a voz neste ambiente.', true);
+          }
+        };
+
+        recognition.onend = () => {
+          const spokenQuery = (finalTranscriptBuffer || heroInput.value || compactInput.value).trim();
+          const wasActive = isListening;
+          setListeningUI(false);
+
+          if (wasActive && spokenQuery) {
+            performSearch(spokenQuery);
+          }
+        };
+      }
+
+      async function toggleVoiceSearch() {
+        if (!window.isSecureContext) {
+          showToast('O microfone exige conexão segura (HTTPS).', true);
+          return;
+        }
+
+        if (!SpeechRecognitionAPI || !recognition) {
+          showToast('Seu navegador não suporta reconhecimento de voz. Use o ditado do teclado.', true, false, 4500);
+          return;
+        }
+
+        if (isListening) {
+          try {
+            recognition.stop();
+          } catch (err) {
+            setListeningUI(false);
+          }
+          return;
+        }
+
+        // Verifica antecipadamente se a Permissions Policy do iframe (Google Sites) bloqueia microfone
+        if (navigator.permissions && navigator.permissions.query) {
+          try {
+            const permStatus = await navigator.permissions.query({ name: 'microphone' });
+            if (permStatus.state === 'denied' && window.self !== window.top) {
+              notifyGoogleSitesMicRestriction();
+              return;
+            }
+          } catch (_) {
+            // Alguns navegadores não suportam query('microphone') em iframes; prossegue para recognition.start()
+          }
+        }
+
+        try {
+          recognition.start();
+        } catch (err) {
+          setListeningUI(false);
+          if (window.self !== window.top) {
+            notifyGoogleSitesMicRestriction();
+          } else {
+            showToast('Não foi possível iniciar o microfone.', true);
+          }
+        }
+      }
+
+      /**
+       * Verifica se a entrada parece um domínio válido sem protocolo (ex: exemplo.com.br).
+       */
+      function looksLikeDomain(value) {
+        if (/\s/.test(value)) return false;
+        return /^(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(?:\/[^\s]*)?$/.test(value);
+      }
+
+      /**
+       * Constrói o destino e o tipo ('url' ou 'search'):
+       * - Se começar com http:// ou https:// -> carrega diretamente
+       * - Se parecer um domínio válido (ex: exemplo.com.br) -> prefixa https://
+       * - Caso contrário -> busca no Google com &igu=1
+       */
+      function resolveDestination(rawQuery) {
+        const cleanQuery = rawQuery.trim();
+        if (/^https?:\/\//i.test(cleanQuery)) {
+          return { url: cleanQuery, type: 'url' };
+        }
+        if (looksLikeDomain(cleanQuery)) {
+          return { url: `https://${cleanQuery}`, type: 'url' };
+        }
+        const encoded = encodeURIComponent(cleanQuery);
+        return {
+          url: `https://www.google.com/search?q=${encoded}&igu=1`,
+          type: 'search'
+        };
+      }
+
+      /**
+       * Atualiza a visibilidade dos botões de limpar texto ('X') nos inputs.
+       */
+      function syncClearButtons() {
+        if (heroInput.value.length > 0) {
+          heroClearBtn.classList.remove('hidden');
+        } else {
+          heroClearBtn.classList.add('hidden');
+        }
+
+        if (compactInput.value.length > 0) {
+          compactClearBtn.classList.remove('hidden');
+        } else {
+          compactClearBtn.classList.add('hidden');
+        }
+      }
+
+      /**
+       * Executa a pesquisa, registra no histórico e transiciona para o iframe em tela cheia.
+       */
+      function performSearch(queryText) {
+        const trimmed = (queryText || '').trim();
+        if (!trimmed) {
+          (isBrowsing ? compactInput : heroInput).focus();
+          return;
+        }
+
+        closeHistoryDropdowns();
+
+        const destination = resolveDestination(trimmed);
+        const targetUrl = destination.url;
+        currentUrl = targetUrl;
+
+        // Salva no histórico persistente
+        addToHistory(trimmed, targetUrl, destination.type);
+
+        // Sincroniza ambos os campos de texto e o link externo
+        heroInput.value = trimmed;
+        compactInput.value = trimmed;
+        externalLinkBtn.href = targetUrl;
+        syncClearButtons();
+
+        // Ativa barra de carregamento
+        loadingTrack.classList.remove('hidden');
+
+        // Atualiza o src do iframe
+        searchIframe.src = targetUrl;
+
+        if (!isBrowsing) {
+          isBrowsing = true;
+
+          // Ajusta padding do cabeçalho para modo compacto fluido
+          topHeader.classList.remove('readless-header');
+          topHeader.classList.add('readless-header--compact');
+          brandLogoBtn.classList.remove('readless-logo');
+          brandLogoBtn.classList.add('readless-logo--compact');
+
+          // Esconde a tela inicial e revela o viewport do iframe em tela cheia
+          homeScreen.classList.add('hidden');
+          bottomPillWrapper.classList.add('opacity-0', 'pointer-events-none', 'translate-y-4');
+
+          browserViewport.classList.remove('hidden');
+          browserViewport.classList.add('flex');
+
+          compactControls.classList.remove('hidden');
+          compactControls.classList.add('flex');
+
+          // Pequeno frame para acionar transição CSS suave
+          requestAnimationFrame(() => {
+            browserViewport.classList.remove('opacity-0', 'translate-y-2');
+            compactControls.classList.remove('opacity-0', 'translate-y-[-6px]');
+          });
+        }
+      }
+
+      /**
+       * Retorna à tela inicial minimalista do readless.
+       */
+      function returnToHome() {
+        closeHistoryDropdowns();
+
+        if (!isBrowsing) {
+          heroInput.value = '';
+          syncClearButtons();
+          heroInput.focus();
+          return;
+        }
+
+        isBrowsing = false;
+        currentUrl = '';
+
+        // Anima saída do iframe e barra compacta
+        browserViewport.classList.add('opacity-0', 'translate-y-2');
+        compactControls.classList.add('opacity-0', 'translate-y-[-6px]');
+
+        // Restaura cabeçalho original
+        topHeader.classList.add('readless-header');
+        topHeader.classList.remove('readless-header--compact');
+        brandLogoBtn.classList.add('readless-logo');
+        brandLogoBtn.classList.remove('readless-logo--compact');
+
+        setTimeout(() => {
+          browserViewport.classList.add('hidden');
+          browserViewport.classList.remove('flex');
+          compactControls.classList.add('hidden');
+          compactControls.classList.remove('flex');
+          searchIframe.src = 'about:blank';
+          loadingTrack.classList.add('hidden');
+
+          homeScreen.classList.remove('hidden');
+          bottomPillWrapper.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-4');
+
+          heroInput.value = '';
+          compactInput.value = '';
+          syncClearButtons();
+          heroInput.focus();
+        }, 220);
+      }
+
+      // Evento de término de carregamento do iframe
+      searchIframe.addEventListener('load', () => {
+        loadingTrack.classList.add('hidden');
+      });
+
+      // Submissão do formulário da tela inicial (Enter ou botão)
+      heroSearchForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        performSearch(heroInput.value);
+      });
+
+      // Submissão do formulário compacto no topo (Enter ou botão)
+      compactSearchForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        performSearch(compactInput.value);
+      });
+
+      // Sincronização em tempo real enquanto digita
+      heroInput.addEventListener('input', () => {
+        compactInput.value = heroInput.value;
+        syncClearButtons();
+      });
+
+      compactInput.addEventListener('input', () => {
+        heroInput.value = compactInput.value;
+        syncClearButtons();
+      });
+
+      // Abrir dropdown de histórico ao focar no campo 'pesquisar' da tela inicial (se houver itens)
+      heroInput.addEventListener('focus', () => {
+        if (loadHistory().length > 0) {
+          openHeroHistory();
+        }
+      });
+
+      // Botões de histórico (tela inicial e barra compacta)
+      heroHistoryBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (!heroHistoryDropdown.classList.contains('hidden')) {
+          heroHistoryDropdown.classList.add('hidden');
+        } else {
+          renderHistoryLists();
+          heroHistoryDropdown.classList.remove('hidden');
+        }
+      });
+
+      compactHistoryBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (!compactHistoryDropdown.classList.contains('hidden')) {
+          compactHistoryDropdown.classList.add('hidden');
+        } else {
+          renderHistoryLists();
+          compactHistoryDropdown.classList.remove('hidden');
+        }
+      });
+
+      // Botões de limpar todo o histórico
+      heroClearHistoryBtn.addEventListener('click', clearAllHistory);
+      compactClearHistoryBtn.addEventListener('click', clearAllHistory);
+
+      // Botões de voz (tela inicial e barra compacta)
+      heroVoiceBtn.addEventListener('click', toggleVoiceSearch);
+      compactVoiceBtn.addEventListener('click', toggleVoiceSearch);
+
+      // Fecha dropdowns de histórico ao clicar fora
+      document.addEventListener('click', (e) => {
+        const insideHero = document.getElementById('heroSearchWrapper')?.contains(e.target);
+        const insideCompact = compactControls.contains(e.target);
+        if (!insideHero && !insideCompact) {
+          closeHistoryDropdowns();
+        }
+      });
+
+      // Botões de limpar input
+      heroClearBtn.addEventListener('click', () => {
+        heroInput.value = '';
+        compactInput.value = '';
+        syncClearButtons();
+        heroInput.focus();
+      });
+
+      compactClearBtn.addEventListener('click', () => {
+        compactInput.value = '';
+        heroInput.value = '';
+        syncClearButtons();
+        compactInput.focus();
+      });
+      // Voltar para Home pelo logo 'readless', ícone de casinha ou botão fechar
+      brandLogoBtn.addEventListener('click', returnToHome);
+      homeBtn.addEventListener('click', returnToHome);
+      closeBrowserBtn.addEventListener('click', returnToHome);
+
+      // Recarregar resultados atuais
+      reloadBtn.addEventListener('click', () => {
+        if (currentUrl) {
+          loadingTrack.classList.remove('hidden');
+          searchIframe.src = currentUrl;
+        }
+      });
+
+      // Atalho global: Escape fecha dropdowns ou volta para a tela inicial
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          if (!heroHistoryDropdown.classList.contains('hidden') || !compactHistoryDropdown.classList.contains('hidden')) {
+            closeHistoryDropdowns();
+            return;
+          }
+          if (isBrowsing && document.activeElement !== compactInput) {
+            returnToHome();
+          }
+        }
+      });
+
+      // Inicializa estado do histórico ao carregar a página
+      renderHistoryLists();
+    })();
+  </script>
+</body>
+</html>
