@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>PC BOOT</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+    background:#000;
+    color:white;
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    font-family:Arial, sans-serif;
+}
+
+#loading, #pronto { display:none; text-align:center; }
+
+p { color:#888; letter-spacing:3px; }
+
+.barra {
+    width:250px;
+    height:4px;
+    background:#222;
+    margin:25px auto;
+}
+
+#progresso {
+    height:100%;
+    width:0%;
+    background:white;
+}
+
+.btn-entrar {
+    display:inline-block;
+    margin-top:20px;
+    color:white;
+    text-decoration:none;
+    border:1px solid white;
+    padding:12px 24px;
+    letter-spacing:3px;
+    cursor:pointer;
+}
+
+.btn-entrar:hover {
+    background:white;
+    color:black;
+}
+</style>
+</head>
+<body>
+
+<div id="inicio">
+    <p>PRESSIONE F11 PARA LIGAR</p>
+</div>
+
+<div id="loading">
+    <h2>LIGANDO O SEU PC...</h2>
+    <div class="barra">
+        <div id="progresso"></div>
+    </div>
+    <p>INICIALIZANDO SISTEMA...</p>
+</div>
+
+<div id="pronto">
+    <h2>SISTEMA PRONTO</h2>
+    <a id="link-sistema" class="btn-entrar" href="https://6shescx.my.canva.site/shescx6" target="_blank" rel="noopener noreferrer">
+        PRESSIONE ENTER PARA ENTRAR
+    </a>
+</div>
+
+<script>
+let ligado = false;
+let prontoParaEntrar = false;
+
+function iniciarBoot() {
+    if (ligado) return;
+    ligado = true;
+
+    document.getElementById("inicio").style.display = "none";
+    document.getElementById("loading").style.display = "block";
+
+    const barra = document.getElementById("progresso");
+
+    setTimeout(() => {
+        barra.style.transition = "width 6s linear";
+        barra.style.width = "100%";
+    }, 50);
+
+    setTimeout(() => {
+        document.getElementById("loading").style.display = "none";
+        document.getElementById("pronto").style.display = "block";
+        prontoParaEntrar = true;
+    }, 6000);
+}
+
+// 1. Detecta a tecla F11 diretamente
+document.addEventListener("keydown", (e) => {
+    if (e.key === "F11" && !ligado) {
+        iniciarBoot();
+    }
+
+    // Etapa final: Pressionar Enter abre a nova guia
+    if (e.key === "Enter" && prontoParaEntrar) {
+        document.getElementById("link-sistema").click();
+    }
+});
+
+// 2. Garante o início caso o navegador intercepte o F11 antes do JS
+window.addEventListener("resize", () => {
+    if (!ligado && window.innerHeight >= screen.height - 5) {
+        iniciarBoot();
+    }
+});
+</script>
+
+</body>
+</html>
