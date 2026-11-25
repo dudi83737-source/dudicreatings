@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PAGINA</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      width: 100%;
+      height: 100%;
+      background-color: #000000;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+    }
+
+    #loading-screen {
+      position: fixed;
+      inset: 0;
+      background-color: #000000;
+      color: #ffffff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.2rem;
+      font-weight: bold;
+      z-index: 10000;
+    }
+
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+    }
+
+    .corner-blue-btn {
+      position: fixed;
+      bottom: 16px;
+      left: 16px;
+      width: 58px;
+      height: 26px;
+      background-color: #0d2b6b;
+      border: none;
+      border-radius: 999px;
+      z-index: 9999;
+      cursor: pointer;
+    }
+    .corner-blue-btn:hover {
+      background-color: #143d94;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="loading-screen">carregando o seu jogo..</div>
+
+  <iframe 
+    src="https://classic.minecraft.net/" 
+    allow="fullscreen; pointer-lock; autoplay" 
+    allowfullscreen>
+  </iframe>
+
+  <a 
+    class="corner-blue-btn" 
+    href="https://6shescx.my.canva.site/shescx6/" 
+    target="_blank" 
+    rel="noopener"
+    aria-label="Abrir site">
+  </a>
+
+  <script>
+    setTimeout(() => {
+      document.getElementById('loading-screen').style.display = 'none';
+    }, 2000);
+  </script>
+
+</body>
+</html>
