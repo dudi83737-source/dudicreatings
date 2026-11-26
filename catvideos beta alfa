@@ -1,0 +1,1693 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Cat Vídeos</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: #080808;
+      color: #ffffff;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      min-height: 100vh;
+    }
+
+    header {
+      background-color: #111111;
+      border-bottom: 1px solid #222;
+      padding: 12px 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      gap: 10px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 20px;
+      font-weight: bold;
+      color: #ffffff;
+      cursor: pointer;
+      user-select: none;
+      flex-shrink: 0;
+    }
+
+    .logo-badge {
+      background-color: #e50914;
+      color: #fff;
+      padding: 3px 9px;
+      border-radius: 6px;
+      font-size: 16px;
+    }
+
+    .nav-acoes {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-header {
+      background-color: #222222;
+      color: #ffffff;
+      border: 1px solid #333;
+      padding: 8px 13px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .btn-enviar {
+      background-color: #e50914;
+      border-color: #e50914;
+    }
+
+    .avatar-mini {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      object-fit: cover;
+      background-color: #444;
+    }
+
+    main {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 20px 16px 40px;
+    }
+
+    .secao-oculta {
+      display: none !important;
+    }
+
+    .titulo-secao {
+      font-size: 19px;
+      margin-bottom: 16px;
+      color: #f1f1f1;
+    }
+
+    .grid-inicio {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+      gap: 18px;
+    }
+
+    .card-inicio {
+      background-color: #121212;
+      border-radius: 14px;
+      overflow: hidden;
+      cursor: pointer;
+      border: 1px solid #1f1f1f;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+
+    .card-inicio:hover {
+      transform: translateY(-3px);
+      border-color: #e50914;
+    }
+
+    .thumb-wrapper {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background-color: #000;
+    }
+
+    .thumb-inicio {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .info-card-inicio {
+      padding: 12px;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+
+    .avatar-criador {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      object-fit: cover;
+      background-color: #2c2c2c;
+      flex-shrink: 0;
+    }
+
+    .detalhes-card h3 {
+      font-size: 15px;
+      color: #ffffff;
+      margin-bottom: 4px;
+      line-height: 1.3;
+    }
+
+    .detalhes-card p {
+      font-size: 13px;
+      color: #aaaaaa;
+    }
+
+    .layout-player {
+      display: flex;
+      gap: 24px;
+      align-items: flex-start;
+    }
+
+    .coluna-principal {
+      flex: 2;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .video-container {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background-color: #000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 10px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .video-container iframe,
+    .video-container video {
+      width: 100%;
+      height: 100%;
+      border: none;
+      object-fit: contain;
+    }
+
+    .btn-sair-fullscreen {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      z-index: 9999;
+      background-color: rgba(15, 15, 15, 0.85);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+      display: none;
+      align-items: center;
+      gap: 8px;
+      opacity: 1;
+      transition: opacity 0.35s ease;
+    }
+
+    .video-container:fullscreen .btn-sair-fullscreen,
+    .video-container:-webkit-full-screen .btn-sair-fullscreen,
+    .video-container.modo-fullscreen-simulado .btn-sair-fullscreen {
+      display: flex;
+    }
+
+    .btn-sair-fullscreen.oculto-inatividade {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .video-container.modo-fullscreen-simulado {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 9998;
+      border-radius: 0;
+    }
+
+    .titulo-video-atual {
+      font-size: 18px;
+      font-weight: bold;
+      margin-top: 14px;
+      color: #ffffff;
+    }
+
+    .barra-inferior {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 12px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid #1f1f1f;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .info-canal {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .nome-canal {
+      font-size: 15px;
+      font-weight: bold;
+      color: #f1f1f1;
+    }
+
+    .btn-acao-canal {
+      background-color: #ffffff;
+      color: #0f0f0f;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .btn-acao-canal.inscrito {
+      background-color: #272727;
+      color: #ffffff;
+    }
+
+    .btn-msg-canal {
+      background-color: #222;
+      color: #fff;
+      border: 1px solid #333;
+      padding: 8px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .controles-direita {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .btn-icone {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .icone-coracao {
+      width: 32px;
+      height: 32px;
+      fill: transparent;
+      stroke: #ffffff;
+      stroke-width: 2;
+    }
+
+    .btn-icone.curtido .icone-coracao {
+      fill: #e50914;
+      stroke: #e50914;
+    }
+
+    .icone-fullscreen {
+      width: 28px;
+      height: 28px;
+      fill: #ffffff;
+    }
+
+    .btn-replay {
+      padding: 14px 26px;
+      font-size: 16px;
+      font-weight: bold;
+      color: #ffffff;
+      background-color: #e50914;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .secao-comentarios {
+      margin-top: 20px;
+      background-color: #121212;
+      border: 1px solid #1f1f1f;
+      border-radius: 12px;
+      padding: 16px;
+    }
+
+    .secao-comentarios h3 {
+      font-size: 16px;
+      margin-bottom: 14px;
+    }
+
+    .form-comentario {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .lista-comentarios {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .item-comentario {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #1e1e1e;
+    }
+
+    .comentario-autor {
+      font-size: 13px;
+      font-weight: bold;
+      color: #e5e5e5;
+      margin-bottom: 3px;
+    }
+
+    .comentario-texto {
+      font-size: 14px;
+      color: #cccccc;
+      line-height: 1.4;
+      word-break: break-word;
+    }
+
+    .coluna-lateral {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    .card-lateral {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background-color: #1a1a1a;
+      border-radius: 14px;
+      cursor: pointer;
+      border: 3px solid transparent;
+      position: relative;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+
+    .card-lateral img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .card-lateral.ativo {
+      border-color: #e50914;
+    }
+
+    .legenda-lateral {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(transparent, rgba(0, 0, 0, 0.92));
+      padding: 20px 12px 8px;
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    .cabecalho-perfil {
+      background-color: #141414;
+      border: 1px solid #242424;
+      border-radius: 16px;
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+
+    .foto-perfil-wrapper {
+      position: relative;
+      width: 88px;
+      height: 88px;
+      flex-shrink: 0;
+    }
+
+    .foto-perfil-grande {
+      width: 88px;
+      height: 88px;
+      border-radius: 50%;
+      object-fit: cover;
+      background-color: #2a2a2a;
+      border: 3px solid #e50914;
+    }
+
+    .btn-trocar-foto {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      background-color: #e50914;
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 28px;
+      height: 28px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .dados-perfil {
+      flex: 1;
+      min-width: 220px;
+    }
+
+    .dados-perfil label {
+      display: block;
+      font-size: 12px;
+      color: #aaaaaa;
+      margin-bottom: 6px;
+    }
+
+    .linha-nome-perfil {
+      display: flex;
+      gap: 10px;
+      max-width: 420px;
+    }
+
+    .input-padrao {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid #333;
+      background-color: #1e1e1e;
+      color: #ffffff;
+      font-size: 14px;
+    }
+
+    .input-padrao:read-only {
+      background-color: #141414;
+      color: #888888;
+      border-color: #262626;
+      cursor: not-allowed;
+    }
+
+    .btn-salvar {
+      background-color: #e50914;
+      color: #fff;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .btn-salvar:disabled {
+      background-color: #333;
+      color: #777;
+      cursor: not-allowed;
+    }
+
+    .layout-mensagens {
+      display: flex;
+      background-color: #121212;
+      border: 1px solid #222;
+      border-radius: 14px;
+      overflow: hidden;
+      height: 70vh;
+      min-height: 420px;
+    }
+
+    .lista-contatos {
+      width: 260px;
+      border-right: 1px solid #222;
+      overflow-y: auto;
+      background-color: #0e0e0e;
+    }
+
+    .item-contato {
+      padding: 14px 16px;
+      border-bottom: 1px solid #1a1a1a;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .item-contato:hover,
+    .item-contato.ativo {
+      background-color: #1f1f1f;
+    }
+
+    .area-chat {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .topo-chat {
+      padding: 14px 18px;
+      border-bottom: 1px solid #222;
+      font-weight: bold;
+      background-color: #161616;
+    }
+
+    .historico-chat {
+      flex: 1;
+      padding: 16px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .bolha-msg {
+      max-width: 75%;
+      padding: 10px 14px;
+      border-radius: 14px;
+      font-size: 14px;
+      line-height: 1.4;
+    }
+
+    .bolha-enviada {
+      align-self: flex-end;
+      background-color: #e50914;
+      color: #fff;
+    }
+
+    .bolha-recebida {
+      align-self: flex-start;
+      background-color: #242424;
+      color: #eee;
+    }
+
+    .rodape-chat {
+      padding: 12px;
+      border-top: 1px solid #222;
+      display: flex;
+      gap: 8px;
+    }
+
+    .modal-fundo {
+      position: fixed;
+      inset: 0;
+      background-color: rgba(0, 0, 0, 0.85);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 300;
+      padding: 14px;
+    }
+
+    .modal-box {
+      background-color: #161616;
+      border: 1px solid #2c2c2c;
+      border-radius: 14px;
+      width: 100%;
+      max-width: 460px;
+      padding: 20px;
+      max-height: 92vh;
+      overflow-y: auto;
+    }
+
+    .modal-topo {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .btn-fechar {
+      background: none;
+      border: none;
+      color: #aaa;
+      font-size: 24px;
+      cursor: pointer;
+    }
+
+    .abas-envio {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .aba-btn {
+      flex: 1;
+      padding: 9px;
+      border-radius: 8px;
+      border: 1px solid #333;
+      background-color: #1e1e1e;
+      color: #ccc;
+      font-size: 13px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .aba-btn.ativa {
+      background-color: #e50914;
+      border-color: #e50914;
+      color: #fff;
+    }
+
+    .campo-form {
+      margin-bottom: 12px;
+    }
+
+    .campo-form label {
+      display: block;
+      font-size: 13px;
+      color: #cccccc;
+      margin-bottom: 5px;
+    }
+
+    .linha-dupla {
+      display: flex;
+      gap: 10px;
+    }
+
+    @media (max-width: 768px) {
+      header { padding: 10px 12px; }
+      .logo { font-size: 17px; }
+      .btn-header { padding: 7px 10px; font-size: 12px; }
+      .texto-oculto-mobile { display: none; }
+      main { padding: 14px 12px 30px; }
+      .grid-inicio { grid-template-columns: 1fr; gap: 14px; }
+      .layout-player { flex-direction: column; }
+      .coluna-lateral { width: 100%; max-height: none; }
+      .layout-mensagens { flex-direction: column; height: 78vh; }
+      .lista-contatos {
+        width: 100%;
+        max-height: 130px;
+        border-right: none;
+        border-bottom: 1px solid #222;
+        display: flex;
+        overflow-x: auto;
+      }
+      .item-contato {
+        flex-shrink: 0;
+        border-bottom: none;
+        border-right: 1px solid #1a1a1a;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo" onclick="mostrarTela('inicio')">
+      <span class="logo-badge">Cat</span> Vídeos
+    </div>
+
+    <div class="nav-acoes">
+      <button class="btn-header btn-enviar" onclick="abrirModalEnvio()">+ Enviar <span class="texto-oculto-mobile">vídeo</span></button>
+      <button class="btn-header" onclick="abrirMensagens()">💬 <span class="texto-oculto-mobile">Mensagens</span></button>
+      <button class="btn-header" onclick="mostrarTela('perfil')">
+        <img id="avatarHeader" class="avatar-mini" src="" alt="Perfil">
+        <span id="nomeHeader">Perfil</span>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <section id="telaInicio">
+      <h2 class="titulo-secao">Vídeos em destaque</h2>
+      <div id="gridInicio" class="grid-inicio"></div>
+    </section>
+
+    <section id="telaPlayer" class="secao-oculta">
+      <div class="layout-player">
+        <div class="coluna-principal">
+          <div id="caixaVideo" class="video-container">
+            <button id="btnSairFullscreen" class="btn-sair-fullscreen" onclick="sairTelaCheia()">✕ Sair da tela cheia</button>
+            <div id="playerArea" style="width:100%; height:100%; display:flex; justify-content:center; align-items:center;"></div>
+          </div>
+
+          <div id="tituloVideoAtual" class="titulo-video-atual">Título do vídeo</div>
+
+          <div class="barra-inferior">
+            <div class="info-canal">
+              <img id="avatarCanalAtual" class="avatar-criador" src="" alt="Canal">
+              <span id="nomeCanal" class="nome-canal">Canal</span>
+              <button id="btnInscrever" class="btn-acao-canal" onclick="alternarInscricao()">Inscrever-se</button>
+              <button class="btn-msg-canal" onclick="enviarMensagemParaCanalAtual()">Mensagem</button>
+            </div>
+
+            <div class="controles-direita">
+              <button id="btnCurtir" class="btn-icone" onclick="alternarCurtida()" title="Curtir vídeo">
+                <svg class="icone-coracao" viewBox="0 0 24 24">
+                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                </svg>
+              </button>
+
+              <button class="btn-icone" onclick="ativarTelaCheia()" title="Tela cheia">
+                <svg class="icone-fullscreen" viewBox="0 0 24 24">
+                  <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="secao-comentarios">
+            <h3>Comentários</h3>
+            <div class="form-comentario">
+              <input type="text" id="inputComentario" class="input-padrao" placeholder="Escreva um comentário...">
+              <button class="btn-salvar" onclick="adicionarComentario()">Comentar</button>
+            </div>
+            <div id="listaComentarios" class="lista-comentarios"></div>
+          </div>
+        </div>
+
+        <div id="listaCards" class="coluna-lateral"></div>
+      </div>
+    </section>
+
+    <section id="telaPerfil" class="secao-oculta">
+      <div class="cabecalho-perfil">
+        <div class="foto-perfil-wrapper">
+          <img id="fotoPerfilGrande" class="foto-perfil-grande" src="" alt="Foto de perfil">
+          <button class="btn-trocar-foto" onclick="document.getElementById('inputFoto').click()" title="Alterar foto">+</button>
+          <input type="file" id="inputFoto" accept="image/*" style="display:none" onchange="carregarFotoPerfil(event)">
+        </div>
+
+        <div class="dados-perfil">
+          <label for="inputNomePerfil">Seu nome de usuário na plataforma:</label>
+          <div class="linha-nome-perfil">
+            <input type="text" id="inputNomePerfil" class="input-padrao" placeholder="Digite seu nome de usuário">
+            <button id="btnSalvarPerfil" class="btn-salvar" onclick="salvarPerfil()">Salvar</button>
+          </div>
+          <p id="avisoNomeTravado" style="font-size: 12px; color: #f59e0b; margin-top: 8px;"></p>
+          <p id="msgPerfil" style="font-size: 13px; color: #4ade80; margin-top: 6px;"></p>
+        </div>
+      </div>
+
+      <h2 class="titulo-secao">Meus vídeos enviados</h2>
+      <div id="gridMeusVideos" class="grid-inicio"></div>
+    </section>
+
+    <section id="telaMensagens" class="secao-oculta">
+      <h2 class="titulo-secao">Mensagens Diretas</h2>
+      <div class="layout-mensagens">
+        <div id="listaContatos" class="lista-contatos"></div>
+        <div class="area-chat">
+          <div id="topoChat" class="topo-chat">Selecione alguém para conversar</div>
+          <div id="historicoChat" class="historico-chat"></div>
+          <div class="rodape-chat">
+            <input type="text" id="inputMensagem" class="input-padrao" placeholder="Digite sua mensagem..." onkeydown="if(event.key==='Enter') enviarMensagem()">
+            <button class="btn-salvar" onclick="enviarMensagem()">Enviar</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="modalEnvio" class="modal-fundo secao-oculta">
+    <div class="modal-box">
+      <div class="modal-topo">
+        <h3>Enviar vídeo</h3>
+        <button class="btn-fechar" onclick="fecharModalEnvio()">&times;</button>
+      </div>
+
+      <div class="abas-envio">
+        <button id="abaYoutube" class="aba-btn ativa" onclick="mudarTipoEnvio('youtube')">Link do YouTube</button>
+        <button id="abaArquivo" class="aba-btn" onclick="mudarTipoEnvio('arquivo')">Do Computador / Celular</button>
+      </div>
+
+      <div class="campo-form">
+        <label>Seu nome de usuário na plataforma *</label>
+        <input type="text" id="envioUsuario" class="input-padrao" placeholder="Ex: GatoGamer">
+      </div>
+
+      <div class="campo-form">
+        <label>Título do vídeo *</label>
+        <input type="text" id="envioTitulo" class="input-padrao" placeholder="Ex: Meu vídeo novo">
+      </div>
+
+      <div id="blocoYoutube">
+        <div class="campo-form">
+          <label>Link ou ID do YouTube *</label>
+          <input type="text" id="envioUrl" class="input-padrao" placeholder="https://www.youtube.com/watch?v=...">
+        </div>
+        <div class="linha-dupla">
+          <div class="campo-form" style="flex:1">
+            <label>Início (segundos)</label>
+            <input type="number" id="envioInicio" class="input-padrao" value="0" min="0">
+          </div>
+          <div class="campo-form" style="flex:1">
+            <label>Duração (segundos)</label>
+            <input type="number" id="envioDuracao" class="input-padrao" value="100" min="5">
+          </div>
+        </div>
+      </div>
+
+      <div id="blocoArquivo" class="secao-oculta">
+        <div class="campo-form">
+          <label>Selecione o arquivo de vídeo (.mp4, .webm, .mov) *</label>
+          <input type="file" id="envioArquivo" accept="video/*" class="input-padrao">
+        </div>
+      </div>
+
+      <button id="btnPublicar" class="btn-salvar" style="width: 100%; margin-top: 8px;" onclick="publicarVideo()">Publicar vídeo</button>
+    </div>
+  </div>
+
+  <script>
+    var NPOINT_URL = "https://api.npoint.io/7f39019fa664baf1dc47";
+
+    var AVATAR_PADRAO = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%232c2c2c'/><circle cx='50' cy='38' r='18' fill='%23888'/><path d='M20 88c0-18 14-28 30-28s30 10 30 28' fill='%23888'/></svg>";
+
+    var videosPadrao = [
+      {
+        uid: 'padrao_1',
+        tipo: 'youtube',
+        id: 'ZPnRi_HPjZw',
+        titulo: 'Monster School: Beer Challenge',
+        inicio: 232,
+        duracao: 100,
+        canal: 'Willcraft Animations',
+        avatar: AVATAR_PADRAO
+      },
+      {
+        uid: 'padrao_2',
+        tipo: 'youtube',
+        id: 'dQw4w9WgXcQ',
+        titulo: 'Never Gonna Give You Up (Official Video)',
+        inicio: 0,
+        duracao: 60,
+        canal: 'Rick Astley',
+        avatar: AVATAR_PADRAO
+      },
+      {
+        uid: 'padrao_3',
+        tipo: 'youtube',
+        id: 'aqz-KE-bpKQ',
+        titulo: 'Big Buck Bunny 60fps 4K',
+        inicio: 10,
+        duracao: 90,
+        canal: 'Blender Foundation',
+        avatar: AVATAR_PADRAO
+      }
+    ];
+
+    var listaVideos = [];
+    var indiceAtual = 0;
+    var player = null;
+    var apiPronta = false;
+    var tipoEnvioAtual = 'youtube';
+    var contatoChatAtual = '';
+    var timerFullscreen = null;
+
+    var caixa = document.getElementById('caixaVideo');
+    var playerArea = document.getElementById('playerArea');
+
+    function abrirBancoVideos() {
+      return new Promise(function(resolve, reject) {
+        var req = indexedDB.open('CatVideosDB', 1);
+        req.onupgradeneeded = function(e) {
+          var db = e.target.result;
+          if (!db.objectStoreNames.contains('arquivos')) {
+            db.createObjectStore('arquivos', { keyPath: 'uid' });
+          }
+        };
+        req.onsuccess = function(e) { resolve(e.target.result); };
+        req.onerror = function(e) { reject(e); };
+      });
+    }
+
+    async function salvarArquivoVideoDB(uid, blob, thumbDataUrl) {
+      var db = await abrirBancoVideos();
+      return new Promise(function(resolve, reject) {
+        var tx = db.transaction('arquivos', 'readwrite');
+        tx.objectStore('arquivos').put({ uid: uid, blob: blob, thumb: thumbDataUrl });
+        tx.oncomplete = function() { resolve(); };
+        tx.onerror = function(e) { reject(e); };
+      });
+    }
+
+    async function obterArquivoVideoDB(uid) {
+      var db = await abrirBancoVideos();
+      return new Promise(function(resolve) {
+        var tx = db.transaction('arquivos', 'readonly');
+        var req = tx.objectStore('arquivos').get(uid);
+        req.onsuccess = function() { resolve(req.result || null); };
+        req.onerror = function() { resolve(null); };
+      });
+    }
+
+    function usuarioJaEnviouVideo() {
+      var salvos = JSON.parse(localStorage.getItem('cat_videos_salvos') || '[]');
+      return salvos.some(function(v) { return v.ehMeu === true; });
+    }
+
+    function obterPerfil() {
+      return {
+        nome: localStorage.getItem('cat_usuario_nome') || '',
+        foto: localStorage.getItem('cat_usuario_foto') || AVATAR_PADRAO
+      };
+    }
+
+    function atualizarVisualPerfil() {
+      var perfil = obterPerfil();
+      var travado = usuarioJaEnviouVideo();
+
+      document.getElementById('avatarHeader').src = perfil.foto;
+      document.getElementById('fotoPerfilGrande').src = perfil.foto;
+      document.getElementById('nomeHeader').textContent = perfil.nome || 'Perfil';
+
+      var inputPerfil = document.getElementById('inputNomePerfil');
+      var btnSalvar = document.getElementById('btnSalvarPerfil');
+      var aviso = document.getElementById('avisoNomeTravado');
+
+      inputPerfil.value = perfil.nome;
+      inputPerfil.readOnly = travado;
+      btnSalvar.disabled = travado;
+
+      if (travado) {
+        aviso.textContent = 'Nome bloqueado para edição porque você já publicou vídeos na plataforma.';
+      } else {
+        aviso.textContent = 'Você pode alterar seu nome livremente enquanto não enviar vídeos.';
+      }
+    }
+
+    function carregarFotoPerfil(event) {
+      var arquivo = event.target.files[0];
+      if (!arquivo) return;
+
+      var leitor = new FileReader();
+      leitor.onload = function(e) {
+        var img = new Image();
+        img.onload = function() {
+          var canvas = document.createElement('canvas');
+          canvas.width = 150;
+          canvas.height = 150;
+          canvas.getContext('2d').drawImage(img, 0, 0, 150, 150);
+          var fotoBase64 = canvas.toDataURL('image/jpeg', 0.8);
+
+          localStorage.setItem('cat_usuario_foto', fotoBase64);
+
+          var salvos = JSON.parse(localStorage.getItem('cat_videos_salvos') || '[]');
+          salvos.forEach(function(v) {
+            if (v.ehMeu) v.avatar = fotoBase64;
+          });
+          localStorage.setItem('cat_videos_salvos', JSON.stringify(salvos));
+
+          atualizarVisualPerfil();
+          carregarListaVideos();
+        };
+        img.src = e.target.result;
+      };
+      leitor.readAsDataURL(arquivo);
+    }
+
+    function salvarPerfil() {
+      if (usuarioJaEnviouVideo()) return;
+      var novoNome = document.getElementById('inputNomePerfil').value.trim();
+      if (!novoNome) {
+        alert('Digite um nome de usuário.');
+        return;
+      }
+      localStorage.setItem('cat_usuario_nome', novoNome);
+      atualizarVisualPerfil();
+
+      var msg = document.getElementById('msgPerfil');
+      msg.textContent = 'Nome salvo com sucesso!';
+      setTimeout(function() { msg.textContent = ''; }, 3000);
+    }
+
+    async function lerBancoNpoint() {
+      if (!NPOINT_URL) return null;
+      try {
+        var resp = await fetch(NPOINT_URL + '?t=' + Date.now());
+        var dados = await resp.json();
+        return dados && typeof dados === 'object' ? dados : {};
+      } catch (e) {
+        return null;
+      }
+    }
+
+    async function salvarBancoNpoint(dadosCompletos) {
+      if (!NPOINT_URL) return;
+      try {
+        await fetch(NPOINT_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(dadosCompletos)
+        });
+      } catch (e) {
+        console.warn('Erro ao sincronizar no npoint:', e);
+      }
+    }
+
+    async function carregarListaVideos() {
+      var salvos = JSON.parse(localStorage.getItem('cat_videos_salvos') || '[]');
+      var videosNuvem = [];
+
+      var banco = await lerBancoNpoint();
+      if (banco && banco.videos) {
+        videosNuvem = Object.values(banco.videos).reverse();
+      }
+
+      for (var i = 0; i < salvos.length; i++) {
+        if (salvos[i].tipo === 'arquivo') {
+          var registro = await obterArquivoVideoDB(salvos[i].uid);
+          if (registro) {
+            salvos[i].blobUrl = URL.createObjectURL(registro.blob);
+            salvos[i].thumbLocal = registro.thumb;
+          }
+        }
+      }
+
+      var mapa = {};
+      salvos.concat(videosNuvem, videosPadrao).forEach(function(v) {
+        if (!v || !v.uid) return;
+        if (!mapa[v.uid]) {
+          mapa[v.uid] = v;
+        } else if (salvos.some(function(s) { return s.uid === v.uid && s.blobUrl; })) {
+          mapa[v.uid] = salvos.find(function(s) { return s.uid === v.uid; });
+        }
+      });
+
+      listaVideos = Object.values(mapa);
+      renderizarTudo();
+    }
+
+    function mudarTipoEnvio(tipo) {
+      tipoEnvioAtual = tipo;
+      document.getElementById('abaYoutube').classList.toggle('ativa', tipo === 'youtube');
+      document.getElementById('abaArquivo').classList.toggle('ativa', tipo === 'arquivo');
+      document.getElementById('blocoYoutube').classList.toggle('secao-oculta', tipo !== 'youtube');
+      document.getElementById('blocoArquivo').classList.toggle('secao-oculta', tipo !== 'arquivo');
+    }
+
+    function abrirModalEnvio() {
+      var perfil = obterPerfil();
+      var inputUser = document.getElementById('envioUsuario');
+      inputUser.value = perfil.nome;
+      inputUser.readOnly = usuarioJaEnviouVideo();
+      document.getElementById('modalEnvio').classList.remove('secao-oculta');
+    }
+
+    function fecharModalEnvio() {
+      document.getElementById('modalEnvio').classList.add('secao-oculta');
+    }
+
+    function extrairIdYoutube(texto) {
+      var regExp = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
+      var match = texto.match(regExp);
+      if (match && match[1]) return match[1];
+      if (texto.trim().length === 11) return texto.trim();
+      return null;
+    }
+
+    function gerarMiniaturaVideoLocal(arquivo) {
+      return new Promise(function(resolve) {
+        var videoTemp = document.createElement('video');
+        videoTemp.preload = 'metadata';
+        videoTemp.muted = true;
+        videoTemp.src = URL.createObjectURL(arquivo);
+        videoTemp.onloadeddata = function() {
+          videoTemp.currentTime = Math.min(1, videoTemp.duration / 2 || 0);
+        };
+        videoTemp.onseeked = function() {
+          var canvas = document.createElement('canvas');
+          canvas.width = 480;
+          canvas.height = 270;
+          canvas.getContext('2d').drawImage(videoTemp, 0, 0, 480, 270);
+          resolve(canvas.toDataURL('image/jpeg', 0.75));
+        };
+        videoTemp.onerror = function() {
+          resolve(AVATAR_PADRAO);
+        };
+      });
+    }
+
+    function lerArquivoComoDataURL(arquivo) {
+      return new Promise(function(resolve, reject) {
+        var leitor = new FileReader();
+        leitor.onload = function(e) { resolve(e.target.result); };
+        leitor.onerror = function(e) { reject(e); };
+        leitor.readAsDataURL(arquivo);
+      });
+    }
+
+    async function publicarVideo() {
+      var usuario = document.getElementById('envioUsuario').value.trim();
+      var titulo = document.getElementById('envioTitulo').value.trim();
+
+      if (!usuario) {
+        alert('Informe seu nome de usuário na plataforma.');
+        return;
+      }
+      if (!titulo) {
+        alert('Digite um título para o vídeo.');
+        return;
+      }
+
+      var btnPub = document.getElementById('btnPublicar');
+      btnPub.disabled = true;
+      btnPub.textContent = 'Publicando...';
+
+      try {
+        var perfil = obterPerfil();
+        var nomeDefinitivo = usuarioJaEnviouVideo() ? perfil.nome : usuario;
+        localStorage.setItem('cat_usuario_nome', nomeDefinitivo);
+
+        var uid = 'vid_' + Date.now();
+        var novoVideo = {
+          uid: uid,
+          tipo: tipoEnvioAtual,
+          titulo: titulo,
+          canal: nomeDefinitivo,
+          avatar: perfil.foto,
+          ehMeu: true
+        };
+
+        var objetoParaNuvem = Object.assign({}, novoVideo);
+        delete objetoParaNuvem.ehMeu;
+
+        if (tipoEnvioAtual === 'youtube') {
+          var url = document.getElementById('envioUrl').value.trim();
+          var videoId = extrairIdYoutube(url);
+          if (!videoId) {
+            alert('Link do YouTube inválido.');
+            btnPub.disabled = false;
+            btnPub.textContent = 'Publicar vídeo';
+            return;
+          }
+          novoVideo.id = videoId;
+          novoVideo.inicio = parseInt(document.getElementById('envioInicio').value, 10) || 0;
+          novoVideo.duracao = parseInt(document.getElementById('envioDuracao').value, 10) || 100;
+          objetoParaNuvem.id = videoId;
+          objetoParaNuvem.inicio = novoVideo.inicio;
+          objetoParaNuvem.duracao = novoVideo.duracao;
+        } else {
+          var inputArq = document.getElementById('envioArquivo');
+          if (!inputArq.files || !inputArq.files[0]) {
+            alert('Selecione um arquivo de vídeo do seu dispositivo.');
+            btnPub.disabled = false;
+            btnPub.textContent = 'Publicar vídeo';
+            return;
+          }
+          var arquivo = inputArq.files[0];
+          var thumb = await gerarMiniaturaVideoLocal(arquivo);
+          await salvarArquivoVideoDB(uid, arquivo, thumb);
+
+          if (NPOINT_URL && arquivo.size <= 3 * 1024 * 1024) {
+            objetoParaNuvem.videoDataUrl = await lerArquivoComoDataURL(arquivo);
+            objetoParaNuvem.thumbLocal = thumb;
+          }
+          inputArq.value = '';
+        }
+
+        var salvos = JSON.parse(localStorage.getItem('cat_videos_salvos') || '[]');
+        salvos.unshift(novoVideo);
+        localStorage.setItem('cat_videos_salvos', JSON.stringify(salvos));
+
+        if (NPOINT_URL) {
+          var bancoAtual = (await lerBancoNpoint()) || {};
+          if (!bancoAtual.videos) bancoAtual.videos = {};
+          if (!bancoAtual.comentarios) bancoAtual.comentarios = {};
+          if (!bancoAtual.mensagens) bancoAtual.mensagens = [];
+          bancoAtual.videos[uid] = objetoParaNuvem;
+          await salvarBancoNpoint(bancoAtual);
+        }
+
+        document.getElementById('envioTitulo').value = '';
+        document.getElementById('envioUrl').value = '';
+        fecharModalEnvio();
+
+        atualizarVisualPerfil();
+        await carregarListaVideos();
+        abrirVideoNoPlayer(0);
+      } finally {
+        btnPub.disabled = false;
+        btnPub.textContent = 'Publicar vídeo';
+      }
+    }
+
+    function mostrarTela(tela) {
+      document.getElementById('telaInicio').classList.add('secao-oculta');
+      document.getElementById('telaPlayer').classList.add('secao-oculta');
+      document.getElementById('telaPerfil').classList.add('secao-oculta');
+      document.getElementById('telaMensagens').classList.add('secao-oculta');
+
+      if (player && player.pauseVideo) player.pauseVideo();
+      var vidHtml5 = playerArea.querySelector('video');
+      if (vidHtml5) vidHtml5.pause();
+
+      if (tela === 'inicio') {
+        document.getElementById('telaInicio').classList.remove('secao-oculta');
+        carregarListaVideos();
+      } else if (tela === 'player') {
+        document.getElementById('telaPlayer').classList.remove('secao-oculta');
+      } else if (tela === 'perfil') {
+        document.getElementById('telaPerfil').classList.remove('secao-oculta');
+        atualizarVisualPerfil();
+        renderizarMeusVideos();
+      } else if (tela === 'mensagens') {
+        document.getElementById('telaMensagens').classList.remove('secao-oculta');
+        renderizarContatosChat();
+      }
+    }
+
+    function obterCapaVideo(video) {
+      if (video.tipo === 'arquivo') {
+        return video.thumbLocal || AVATAR_PADRAO;
+      }
+      return 'https://img.youtube.com/vi/' + video.id + '/hqdefault.jpg';
+    }
+
+    function criarElementoCardGrid(video, indiceNaLista) {
+      var card = document.createElement('div');
+      card.className = 'card-inicio';
+      card.onclick = function() { abrirVideoNoPlayer(indiceNaLista); };
+
+      card.innerHTML =
+        '<div class="thumb-wrapper">' +
+          '<img class="thumb-inicio" src="' + obterCapaVideo(video) + '" alt="' + video.titulo + '">' +
+        '</div>' +
+        '<div class="info-card-inicio">' +
+          '<img class="avatar-criador" src="' + (video.avatar || AVATAR_PADRAO) + '" alt="' + video.canal + '">' +
+          '<div class="detalhes-card">' +
+            '<h3>' + video.titulo + '</h3>' +
+            '<p>' + video.canal + '</p>' +
+          '</div>' +
+        '</div>';
+
+      return card;
+    }
+
+    function renderizarGradeInicio() {
+      var grid = document.getElementById('gridInicio');
+      grid.innerHTML = '';
+      listaVideos.forEach(function(video, idx) {
+        grid.appendChild(criarElementoCardGrid(video, idx));
+      });
+    }
+
+    function renderizarMeusVideos() {
+      var grid = document.getElementById('gridMeusVideos');
+      grid.innerHTML = '';
+      var encontrados = 0;
+      listaVideos.forEach(function(video, idx) {
+        if (video.ehMeu) {
+          grid.appendChild(criarElementoCardGrid(video, idx));
+          encontrados++;
+        }
+      });
+      if (encontrados === 0) {
+        grid.innerHTML = '<p style="color:#888;">Você ainda não enviou nenhum vídeo.</p>';
+      }
+    }
+
+    function renderizarCardsLaterais() {
+      var container = document.getElementById('listaCards');
+      container.innerHTML = '';
+      listaVideos.forEach(function(video, index) {
+        var card = document.createElement('div');
+        card.className = 'card-lateral' + (index === indiceAtual ? ' ativo' : '');
+        card.onclick = function() { abrirVideoNoPlayer(index); };
+
+        card.innerHTML =
+          '<img src="' + obterCapaVideo(video) + '" alt="' + video.titulo + '">' +
+          '<div class="legenda-lateral">' + video.titulo + '</div>';
+
+        container.appendChild(card);
+      });
+    }
+
+    function renderizarTudo() {
+      renderizarGradeInicio();
+      renderizarCardsLaterais();
+      renderizarMeusVideos();
+    }
+
+    function abrirVideoNoPlayer(indice) {
+      indiceAtual = indice;
+      mostrarTela('player');
+      renderizarCardsLaterais();
+      atualizarInterfacePlayer();
+      renderizarComentarios();
+      carregarPlayer(true);
+    }
+
+    function atualizarInterfacePlayer() {
+      var video = listaVideos[indiceAtual];
+      if (!video) return;
+
+      document.getElementById('tituloVideoAtual').textContent = video.titulo;
+      document.getElementById('nomeCanal').textContent = video.canal;
+      document.getElementById('avatarCanalAtual').src = video.avatar || AVATAR_PADRAO;
+
+      var curtido = localStorage.getItem('like_' + video.uid) === 'true';
+      document.getElementById('btnCurtir').classList.toggle('curtido', curtido);
+
+      var inscrito = localStorage.getItem('sub_' + video.canal) === 'true';
+      var btnSub = document.getElementById('btnInscrever');
+      btnSub.textContent = inscrito ? 'Inscrito ✓' : 'Inscrever-se';
+      btnSub.classList.toggle('inscrito', inscrito);
+    }
+
+    function alternarCurtida() {
+      var video = listaVideos[indiceAtual];
+      var btn = document.getElementById('btnCurtir');
+      var novoEstado = !btn.classList.contains('curtido');
+      btn.classList.toggle('curtido', novoEstado);
+      localStorage.setItem('like_' + video.uid, novoEstado);
+    }
+
+    function alternarInscricao() {
+      var video = listaVideos[indiceAtual];
+      var btn = document.getElementById('btnInscrever');
+      var novoEstado = !btn.classList.contains('inscrito');
+      btn.classList.toggle('inscrito', novoEstado);
+      btn.textContent = novoEstado ? 'Inscrito ✓' : 'Inscrever-se';
+      localStorage.setItem('sub_' + video.canal, novoEstado);
+    }
+
+    function carregarPlayer(autoPlay) {
+      var video = listaVideos[indiceAtual];
+      if (!video) return;
+
+      playerArea.innerHTML = '';
+
+      if (video.tipo === 'arquivo') {
+        var vid = document.createElement('video');
+        vid.src = video.blobUrl || video.videoDataUrl || '';
+        vid.controls = true;
+        vid.playsInline = true;
+        if (autoPlay) vid.autoplay = true;
+        vid.onended = function() {
+          playerArea.innerHTML = '<button class="btn-replay" onclick="carregarPlayer(true)">Assistir filme de novo</button>';
+        };
+        playerArea.appendChild(vid);
+        return;
+      }
+
+      playerArea.innerHTML = '<div id="player"></div>';
+      if (!apiPronta) return;
+
+      player = new YT.Player('player', {
+        videoId: video.id,
+        playerVars: {
+          'controls': 0,
+          'start': video.inicio,
+          'end': video.inicio + video.duracao,
+          'autoplay': autoPlay ? 1 : 0,
+          'rel': 0,
+          'playsinline': 1,
+          'origin': window.location.origin
+        },
+        events: {
+          'onStateChange': function(event) {
+            if (event.data === YT.PlayerState.ENDED) {
+              playerArea.innerHTML = '<button class="btn-replay" onclick="carregarPlayer(true)">Assistir filme de novo</button>';
+            }
+          }
+        }
+      });
+    }
+
+    function mostrarBotaoSairTemporariamente() {
+      var btnSair = document.getElementById('btnSairFullscreen');
+      btnSair.classList.remove('oculto-inatividade');
+      clearTimeout(timerFullscreen);
+      timerFullscreen = setTimeout(function() {
+        btnSair.classList.add('oculto-inatividade');
+      }, 3000);
+    }
+
+    function ativarTelaCheia() {
+      if (caixa.requestFullscreen) {
+        caixa.requestFullscreen().catch(function() {
+          caixa.classList.add('modo-fullscreen-simulado');
+        });
+      } else if (caixa.webkitRequestFullscreen) {
+        caixa.webkitRequestFullscreen();
+      } else {
+        caixa.classList.add('modo-fullscreen-simulado');
+      }
+      mostrarBotaoSairTemporariamente();
+    }
+
+    function sairTelaCheia() {
+      caixa.classList.remove('modo-fullscreen-simulado');
+      if (document.fullscreenElement) {
+        document.exitFullscreen();
+      } else if (document.webkitFullscreenElement) {
+        document.webkitExitFullscreen();
+      }
+      clearTimeout(timerFullscreen);
+    }
+
+    ['mousemove', 'mousedown', 'touchstart', 'click'].forEach(function(evento) {
+      caixa.addEventListener(evento, function() {
+        if (document.fullscreenElement || document.webkitFullscreenElement || caixa.classList.contains('modo-fullscreen-simulado')) {
+          mostrarBotaoSairTemporariamente();
+        }
+      });
+    });
+
+    document.addEventListener('fullscreenchange', function() {
+      if (document.fullscreenElement) {
+        mostrarBotaoSairTemporariamente();
+      } else {
+        caixa.classList.remove('modo-fullscreen-simulado');
+      }
+    });
+
+    async function renderizarComentarios() {
+      var video = listaVideos[indiceAtual];
+      var listaEl = document.getElementById('listaComentarios');
+      var todos = JSON.parse(localStorage.getItem('cat_comentarios') || '{}');
+      var comentariosVideo = todos[video.uid] || [];
+
+      var banco = await lerBancoNpoint();
+      if (banco && banco.comentarios && banco.comentarios[video.uid]) {
+        comentariosVideo = banco.comentarios[video.uid];
+      }
+
+      listaEl.innerHTML = '';
+      if (comentariosVideo.length === 0) {
+        listaEl.innerHTML = '<p style="color:#777; font-size:13px;">Nenhum comentário ainda. Seja o primeiro!</p>';
+        return;
+      }
+
+      comentariosVideo.forEach(function(c) {
+        var item = document.createElement('div');
+        item.className = 'item-comentario';
+        item.innerHTML =
+          '<img class="avatar-criador" style="width:32px; height:32px;" src="' + (c.avatar || AVATAR_PADRAO) + '">' +
+          '<div>' +
+            '<div class="comentario-autor">' + c.autor + '</div>' +
+            '<div class="comentario-texto">' + c.texto + '</div>' +
+          '</div>';
+        listaEl.appendChild(item);
+      });
+    }
+
+    async function adicionarComentario() {
+      var input = document.getElementById('inputComentario');
+      var texto = input.value.trim();
+      if (!texto) return;
+
+      var perfil = obterPerfil();
+      var nomeAutor = perfil.nome;
+
+      if (!nomeAutor) {
+        nomeAutor = prompt('Digite seu nome de usuário para comentar:');
+        if (!nomeAutor || !nomeAutor.trim()) return;
+        nomeAutor = nomeAutor.trim();
+        localStorage.setItem('cat_usuario_nome', nomeAutor);
+        atualizarVisualPerfil();
+      }
+
+      var video = listaVideos[indiceAtual];
+      var novoComentario = {
+        autor: nomeAutor,
+        avatar: perfil.foto,
+        texto: texto
+      };
+
+      var todos = JSON.parse(localStorage.getItem('cat_comentarios') || '{}');
+      if (!todos[video.uid]) todos[video.uid] = [];
+      todos[video.uid].unshift(novoComentario);
+      localStorage.setItem('cat_comentarios', JSON.stringify(todos));
+
+      if (NPOINT_URL) {
+        var bancoAtual = (await lerBancoNpoint()) || {};
+        if (!bancoAtual.videos) bancoAtual.videos = {};
+        if (!bancoAtual.comentarios) bancoAtual.comentarios = {};
+        if (!bancoAtual.mensagens) bancoAtual.mensagens = [];
+        if (!bancoAtual.comentarios[video.uid]) bancoAtual.comentarios[video.uid] = [];
+        bancoAtual.comentarios[video.uid].unshift(novoComentario);
+        await salvarBancoNpoint(bancoAtual);
+      }
+
+      input.value = '';
+      renderizarComentarios();
+    }
+
+    function obterListaDeUsuarios() {
+      var nomes = {};
+      listaVideos.forEach(function(v) {
+        if (v.canal) nomes[v.canal] = v.avatar || AVATAR_PADRAO;
+      });
+      return Object.keys(nomes).map(function(nome) {
+        return { nome: nome, avatar: nomes[nome] };
+      });
+    }
+
+    function abrirMensagens(destinatarioOpcional) {
+      mostrarTela('mensagens');
+      var usuarios = obterListaDeUsuarios();
+      if (destinatarioOpcional) {
+        contatoChatAtual = destinatarioOpcional;
+      } else if (!contatoChatAtual && usuarios.length > 0) {
+        contatoChatAtual = usuarios[0].nome;
+      }
+      renderizarContatosChat();
+      renderizarHistoricoChat();
+    }
+
+    function enviarMensagemParaCanalAtual() {
+      var video = listaVideos[indiceAtual];
+      if (video) abrirMensagens(video.canal);
+    }
+
+    function renderizarContatosChat() {
+      var listaEl = document.getElementById('listaContatos');
+      var usuarios = obterListaDeUsuarios();
+      listaEl.innerHTML = '';
+
+      usuarios.forEach(function(u) {
+        var div = document.createElement('div');
+        div.className = 'item-contato' + (u.nome === contatoChatAtual ? ' ativo' : '');
+        div.onclick = function() {
+          contatoChatAtual = u.nome;
+          renderizarContatosChat();
+          renderizarHistoricoChat();
+        };
+        div.innerHTML =
+          '<img class="avatar-mini" src="' + u.avatar + '">' +
+          '<span>' + u.nome + '</span>';
+        listaEl.appendChild(div);
+      });
+    }
+
+    async function renderizarHistoricoChat() {
+      var topo = document.getElementById('topoChat');
+      var histEl = document.getElementById('historicoChat');
+      if (!contatoChatAtual) return;
+
+      topo.textContent = 'Conversando com ' + contatoChatAtual;
+      var perfil = obterPerfil();
+      var meuNome = perfil.nome || 'Visitante';
+
+      var todasMsgs = [];
+      var banco = await lerBancoNpoint();
+      if (banco && Array.isArray(banco.mensagens)) {
+        todasMsgs = banco.mensagens;
+      } else {
+        var locais = JSON.parse(localStorage.getItem('cat_mensagens_global') || '[]');
+        todasMsgs = locais;
+      }
+
+      var msgsFiltradas = todasMsgs.filter(function(m) {
+        return (m.de === meuNome && m.para === contatoChatAtual) ||
+               (m.de === contatoChatAtual && m.para === meuNome);
+      });
+
+      histEl.innerHTML = '';
+      if (msgsFiltradas.length === 0) {
+        histEl.innerHTML = '<p style="color:#777; font-size:13px;">Envie a primeira mensagem para ' + contatoChatAtual + '.</p>';
+        return;
+      }
+
+      msgsFiltradas.forEach(function(m) {
+        var ehMinha = m.de === meuNome;
+        var bolha = document.createElement('div');
+        bolha.className = 'bolha-msg ' + (ehMinha ? 'bolha-enviada' : 'bolha-recebida');
+        bolha.textContent = m.de + ': ' + m.texto;
+        histEl.appendChild(bolha);
+      });
+      histEl.scrollTop = histEl.scrollHeight;
+    }
+
+    async function enviarMensagem() {
+      if (!contatoChatAtual) return;
+      var input = document.getElementById('inputMensagem');
+      var texto = input.value.trim();
+      if (!texto) return;
+
+      var perfil = obterPerfil();
+      var meuNome = perfil.nome;
+      if (!meuNome) {
+        meuNome = prompt('Digite seu nome de usuário para enviar mensagens:');
+        if (!meuNome || !meuNome.trim()) return;
+        meuNome = meuNome.trim();
+        localStorage.setItem('cat_usuario_nome', meuNome);
+        atualizarVisualPerfil();
+      }
+
+      var novaMsg = {
+        de: meuNome,
+        para: contatoChatAtual,
+        texto: texto,
+        data: Date.now()
+      };
+
+      var locais = JSON.parse(localStorage.getItem('cat_mensagens_global') || '[]');
+      locais.push(novaMsg);
+      localStorage.setItem('cat_mensagens_global', JSON.stringify(locais));
+
+      if (NPOINT_URL) {
+        var bancoAtual = (await lerBancoNpoint()) || {};
+        if (!bancoAtual.videos) bancoAtual.videos = {};
+        if (!bancoAtual.comentarios) bancoAtual.comentarios = {};
+        if (!Array.isArray(bancoAtual.mensagens)) bancoAtual.mensagens = [];
+        bancoAtual.mensagens.push(novaMsg);
+        await salvarBancoNpoint(bancoAtual);
+      }
+
+      input.value = '';
+      renderizarHistoricoChat();
+    }
+
+    function onYouTubeIframeAPIReady() {
+      apiPronta = true;
+    }
+
+    if (window.YT && window.YT.Player) {
+      apiPronta = true;
+    } else {
+      var tag = document.createElement('script');
+      tag.src = 'https://www.youtube.com/iframe_api';
+      document.head.appendChild(tag);
+    }
+
+    atualizarVisualPerfil();
+    carregarListaVideos();
+  </script>
+
+</body>
+</html>
+    
