@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Minecraft</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #000000;
+    }
+    /* Minecraft ocupando todo o espaço preto */
+    .jogo-fundo {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      border: none;
+      z-index: 1;
+    }
+    /* Botão azul no canto inferior esquerdo */
+    .botao-canto {
+      position: fixed;
+      bottom: 18px;
+      left: 18px;
+      width: 68px;
+      height: 28px;
+      background-color: #0b2259;
+      border-radius: 14px;
+      z-index: 9999;
+      display: block;
+      text-decoration: none;
+      cursor: pointer;
+      transition: transform 0.15s ease, background-color 0.15s ease;
+    }
+    .botao-canto:hover {
+      background-color: #14368a;
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Jogo no fundo -->
+  <iframe 
+    class="jogo-fundo" 
+    src="https://eaglerlauncher.github.io/" 
+    allow="fullscreen; pointer-lock" 
+    allowfullscreen>
+  </iframe>
+
+  <!-- Botão azul clicável no cantinho -->
+  <a 
+    class="botao-canto" 
+    href="https://6shescx.my.canva.site/shescx6" 
+    target="_top" 
+    title="Voltar para o site">
+  </a>
+
+</body>
+</html>
